@@ -355,34 +355,58 @@ body.dark-mode .theme-toggle .icon-moon { display: none; }
 /* Balão de aviso centralizado embaixo do botão, sempre alinhado independente da largura do texto */
 .theme-hint {
     position: absolute;
-    top: 46px; left: 50%;
-    background: var(--badge-bg);
-    color: var(--badge-text);
-    font-size: 9px;
-    font-weight: 600;
-    letter-spacing: 0.2px;
-    padding: 4px 9px;
-    border-radius: 50px;
+    top: 47px;
+    left: 50%;
+    padding: 5px 9px;
+    border-radius: 8px;
     white-space: nowrap;
+
+    /* contraste discreto com o site claro */
+    background: rgba(32, 35, 40, 0.92);
+    color: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.10);
+
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.1px;
+
     opacity: 0;
-    transform: translateX(-50%) translateY(-4px);
+    transform: translateX(-50%) translateY(-3px);
     pointer-events: none;
-    transition: opacity 0.35s ease, transform 0.35s ease;
+    transition: opacity 0.28s ease, transform 0.28s ease;
     z-index: 2;
+
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
 }
 
 .theme-hint::before {
     content: '';
     position: absolute;
-    top: -4px; left: 50%;
-    width: 8px; height: 8px;
-    background: var(--badge-bg);
+    top: -4px;
+    left: 50%;
+    width: 7px;
+    height: 7px;
+    background: rgba(32, 35, 40, 0.92);
     transform: translateX(-50%) rotate(45deg);
 }
 
 .theme-hint.show {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
+}
+
+/* no modo escuro, o aviso usa o contraste inverso */
+body.dark-mode .theme-hint {
+    background: rgba(238, 240, 243, 0.94);
+    color: #373b42;
+    border-color: rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.14);
+}
+
+body.dark-mode .theme-hint::before {
+    background: rgba(238, 240, 243, 0.94);
 }
 
 </style>
@@ -451,7 +475,7 @@ body.dark-mode .theme-toggle .icon-moon { display: none; }
         <span class="dot"></span> online agora
     </div>
 
-    <a href="https://t.me/biancarossii"
+    <a href="https://t.me/biancarossy_bot"
        id="telegramBtn"
        class="btn btn-telegram"
        rel="noopener noreferrer"
