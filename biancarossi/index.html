@@ -319,9 +319,20 @@ body {
     font-size: 9px; color: #28a745; font-weight: 600; margin-bottom: 12px;
     background: #e9fbf0; padding: 3px 9px; border-radius: 20px;
     display: inline-flex; align-items: center; gap: 4px; border: 1px solid #c3e6cb;
+    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+body.dark-mode .online-status {
+    color: #74d68b;
+    background: rgba(40, 167, 69, 0.10);
+    border-color: rgba(116, 214, 139, 0.22);
 }
 
 .dot { width: 6px; height: 6px; background-color: #28a745; border-radius: 50%; animation: pulse-green 2s infinite; }
+
+body.dark-mode .dot {
+    background-color: #74d68b;
+}
 
 @keyframes pulse-green {
     0%   { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
