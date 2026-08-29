@@ -585,15 +585,17 @@ body.dark-mode .theme-hint::before {
     });
 })();
 
-// ── Dica do botão de tema (aparece, some, e repete mais uma vez) ──
+// ── Dica do botão de tema ──
 (function() {
     var hint = document.getElementById('themeHint');
     var toggle = document.getElementById('themeToggle');
     if (!hint || !toggle) return;
 
-    var dismissed = false;
     var timesShown = 0;
     var maxShows = 2;
+    var themeClicked = false;
+    var hideTimer = null;
+    var secondShowTimer = null;
 
     function getNextThemeLabel() {
         return document.body.classList.contains('dark-mode')
@@ -601,40 +603,40 @@ body.dark-mode .theme-hint::before {
             : 'modo escuro';
     }
 
-    function dismiss() {
-        dismissed = true;
+    function showHint() {
+        // Depois que o botão foi clicado, nenhuma nova notificação é enviada.
+        if (themeClicked || timesShown >= maxShows) return;
 
-        // Primeiro some com o texto atual, sem trocar o nome enquanto está visível.
-        hint.classList.remove('show');
-
-        // Só depois que a transição terminar deixamos preparado
-        // o texto correspondente ao novo contraste.
-        setTimeout(function() {
-            hint.textContent = getNextThemeLabel();
-        }, 300);
-    }
-
-    function show() {
-        if (dismissed || timesShown >= maxShows) return;
-
-        // O texto só é definido no momento de uma nova exibição.
+        // O texto só é atualizado no instante em que uma nova notificação aparece.
         hint.textContent = getNextThemeLabel();
-
         timesShown++;
+
         hint.classList.add('show');
 
-        setTimeout(function() {
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(function() {
             hint.classList.remove('show');
 
-            if (!dismissed && timesShown < maxShows) {
-                setTimeout(show, 2000);
+            // Se a primeira terminou e o usuário ainda não clicou no tema,
+            // agenda a segunda para 3 segundos depois.
+            if (!themeClicked && timesShown === 1) {
+                clearTimeout(secondShowTimer);
+                secondShowTimer = setTimeout(showHint, 3000);
             }
         }, 2000);
     }
 
-    setTimeout(show, 500);
+    // Primeira notificação ao carregar.
+    setTimeout(showHint, 500);
 
-    toggle.addEventListener('click', dismiss, { once: true });
+    toggle.addEventListener('click', function() {
+        themeClicked = true;
+
+        // Cancela somente futuras notificações.
+        // Se a primeira já estiver visível, ela termina normalmente,
+        // sem trocar o texto antes de desaparecer.
+        clearTimeout(secondShowTimer);
+    });
 })();
 
 // ── Pulso suave do verificado, 3s após a inicialização ──
