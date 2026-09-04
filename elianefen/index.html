@@ -47,8 +47,8 @@ body {
 }
 
 .card {
-    background: var(--card-bg); width: 100%; max-width: 380px; min-height: 480px;
-    padding: 35px 25px; border-radius: 25px; text-align: center;
+    background: var(--card-bg); width: 100%; max-width: 410px; min-height: 500px;
+    padding: 38px 28px; border-radius: 26px; text-align: center;
     box-shadow: 0 20px 40px rgba(0,0,0,0.1);
     display: flex; flex-direction: column; align-items: center;
     transition: background 0.3s ease;
@@ -327,11 +327,11 @@ body.dark-mode .dot {
 
 .btn {
     width: 100%;
-    min-height: 62px;
+    min-height: 70px;
     font-weight: 800;
-    font-size: 15px;
-    padding: 13px 18px;
-    border-radius: 18px;
+    font-size: 16px;
+    padding: 15px 18px;
+    border-radius: 19px;
     border: none;
     cursor: pointer;
     display: flex;
@@ -345,9 +345,9 @@ body.dark-mode .dot {
 }
 
 .telegram-logo {
-    width: 30px;
-    height: 30px;
-    flex: 0 0 30px;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
     display: block;
     transform-origin: center;
     animation: telegramLogoPulse 2.8s ease-in-out infinite;
@@ -378,13 +378,13 @@ body.dark-mode .dot {
 }
 
 .telegram-btn-main {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 800;
     color: var(--privacy-text);
 }
 
 .telegram-btn-sub {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--subtitle-text);
     opacity: 0.78;
@@ -392,8 +392,8 @@ body.dark-mode .dot {
 
 .telegram-arrow {
     margin-left: auto;
-    width: 26px;
-    height: 26px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -407,9 +407,9 @@ body.dark-mode .dot {
 }
 
 .btn-telegram {
-    min-height: 58px;
-    margin-top: 8px;
-    padding: 11px 14px;
+    min-height: 70px;
+    margin-top: 10px;
+    padding: 14px 16px;
     justify-content: flex-start;
     gap: 11px;
     background: var(--badge-bg);
@@ -453,9 +453,9 @@ body.dark-mode .btn-telegram {
 
 /* ── Botão TikTok ── */
 .tiktok-logo {
-    width: 30px;
-    height: 30px;
-    flex: 0 0 30px;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
     display: block;
     overflow: visible;
     border-radius: 50%;
@@ -482,8 +482,8 @@ body.dark-mode .btn-telegram {
 
 .tiktok-arrow {
     margin-left: auto;
-    width: 26px;
-    height: 26px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -497,9 +497,9 @@ body.dark-mode .btn-telegram {
 }
 
 .btn-tiktok {
-    min-height: 58px;
-    margin-top: 9px;
-    padding: 11px 14px;
+    min-height: 70px;
+    margin-top: 10px;
+    padding: 14px 16px;
     justify-content: flex-start;
     gap: 11px;
     background: var(--badge-bg);
@@ -538,6 +538,19 @@ body.dark-mode .btn-telegram {
 body.dark-mode .btn-tiktok {
     background: var(--badge-bg);
     border-color: rgba(255,255,255,0.10);
+}
+
+@media (max-width: 460px) {
+    body { padding: 14px; }
+    .card {
+        max-width: 100%;
+        min-height: 490px;
+        padding: 34px 22px;
+    }
+    .btn-telegram,
+    .btn-tiktok {
+        min-height: 68px;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -727,7 +740,7 @@ body.dark-mode .theme-hint::before {
 
     <div class="badge">
         <span class="badge-name">
-            Eliane Fen
+            eliane Fen
             <span class="verified-icon" id="verifiedIcon" aria-label="Conta verificada" title="Conta verificada">
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path
@@ -787,7 +800,7 @@ body.dark-mode .theme-hint::before {
             </g>
         </svg>
         <span class="telegram-btn-text">
-            <span class="telegram-btn-main">Meu TikTok</span>
+            <span class="telegram-btn-main">meu TikTok</span>
             <span class="telegram-btn-sub">Acesse meu perfil oficial</span>
         </span>
         <span class="tiktok-arrow" aria-hidden="true">›</span>
