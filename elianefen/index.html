@@ -295,17 +295,20 @@ body {
 .title { font-size: 22px; font-weight: 800; color: var(--privacy-text); margin-bottom: 6px; }
 .subtitle { font-size: 13px; color: var(--subtitle-text); font-weight: 500; line-height: 1.4; margin-bottom: 15px; }
 
-.online-status {
-    font-size: 9px; color: #28a745; font-weight: 600; margin-bottom: 12px;
-    background: #e9fbf0; padding: 3px 9px; border-radius: 20px;
-    display: inline-flex; align-items: center; gap: 4px; border: 1px solid #c3e6cb;
-    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+.telegram-online-status {
+    margin-top: 3px;
+    font-size: 10px;
+    color: #28a745;
+    font-weight: 650;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    line-height: 1;
+    width: fit-content;
 }
 
-body.dark-mode .online-status {
+body.dark-mode .telegram-online-status {
     color: #74d68b;
-    background: rgba(40, 167, 69, 0.10);
-    border-color: rgba(116, 214, 139, 0.22);
 }
 
 .dot { width: 6px; height: 6px; background-color: #28a745; border-radius: 50%; animation: pulse-green 2s infinite; }
@@ -318,11 +321,6 @@ body.dark-mode .dot {
     0%   { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
     70%  { box-shadow: 0 0 0 6px rgba(40, 167, 69, 0); }
     100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
-}
-
-@keyframes telegram-attention {
-    0%, 100% { box-shadow: 0 8px 20px rgba(34,158,217,0.28), 0 0 0 0 rgba(42,171,238,0.18); }
-    50%      { box-shadow: 0 12px 28px rgba(34,158,217,0.38), 0 0 0 7px rgba(42,171,238,0); }
 }
 
 .btn {
@@ -350,12 +348,6 @@ body.dark-mode .dot {
     flex: 0 0 34px;
     display: block;
     transform-origin: center;
-    animation: telegramLogoPulse 2.8s ease-in-out infinite;
-}
-
-@keyframes telegramLogoPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.07); }
 }
 
 @keyframes telegramButtonGlow {
@@ -364,9 +356,16 @@ body.dark-mode .dot {
         box-shadow: 0 0 0 rgba(34,158,217,0);
     }
     50% {
-        border-color: rgba(34,158,217,0.30);
-        box-shadow: 0 5px 16px rgba(34,158,217,0.08);
+        border-color: rgba(34,158,217,0.27);
+        box-shadow: 0 6px 18px rgba(34,158,217,0.08);
     }
+}
+
+@keyframes telegramSweep {
+    0%, 62% { transform: translateX(-150%); opacity: 0; }
+    70% { opacity: 0.32; }
+    88% { opacity: 0.18; }
+    100% { transform: translateX(170%); opacity: 0; }
 }
 
 .telegram-btn-text {
@@ -381,6 +380,22 @@ body.dark-mode .dot {
     font-size: 15px;
     font-weight: 800;
     color: var(--privacy-text);
+}
+
+.tiktok-title-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tiktok-title-row .verified-icon {
+    width: 15px;
+    height: 15px;
+}
+
+.tiktok-title-row .verified-icon svg {
+    width: 15px;
+    height: 15px;
 }
 
 .telegram-btn-sub {
@@ -422,6 +437,19 @@ body.dark-mode .dot {
     animation: telegramButtonGlow 2.8s ease-in-out infinite;
 }
 
+.btn-telegram::after {
+    content: '';
+    position: absolute;
+    top: -35%;
+    bottom: -35%;
+    left: -28%;
+    width: 18%;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(34,158,217,0.15), transparent);
+    transform: translateX(-150%);
+    animation: telegramSweep 4.2s ease-in-out infinite;
+}
+
 .btn-telegram:hover {
     animation-play-state: paused;
     transform: translateY(-1px);
@@ -432,6 +460,10 @@ body.dark-mode .dot {
 .btn-telegram:hover .telegram-arrow {
     transform: translateX(2px);
     background: rgba(34,158,217,0.16);
+}
+
+.btn-telegram:hover::after {
+    animation-play-state: paused;
 }
 
 .btn-telegram:active {
@@ -555,6 +587,7 @@ body.dark-mode .btn-tiktok {
 
 @media (prefers-reduced-motion: reduce) {
     .btn-telegram,
+    .btn-telegram::after,
     .telegram-logo,
     .btn-tiktok,
     .tiktok-logo {
@@ -690,6 +723,86 @@ body.dark-mode .theme-hint::before {
     background: rgba(238, 240, 243, 0.94);
 }
 
+
+
+/* ── Refinamento de alinhamento óptico ──
+   Mantém o eixo central do card e organiza os dois CTAs na mesma grade. */
+.btn-telegram,
+.btn-tiktok {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) 30px;
+    align-items: center;
+    column-gap: 12px;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.telegram-logo,
+.tiktok-logo {
+    width: 36px;
+    height: 36px;
+    flex: none;
+    justify-self: center;
+}
+
+.telegram-btn-text {
+    min-width: 0;
+    justify-self: start;
+    align-self: center;
+}
+
+.telegram-arrow,
+.tiktok-arrow {
+    margin-left: 0;
+    justify-self: end;
+    align-self: center;
+}
+
+.telegram-online-status {
+    margin-top: 4px;
+    line-height: 1.05;
+}
+
+.telegram-online-status .dot {
+    position: relative;
+    top: -0.2px;
+}
+
+.tiktok-title-row {
+    line-height: 1;
+}
+
+.tiktok-title-row .verified-icon {
+    transform: translateY(0.4px);
+}
+
+/* O foco de movimento fica somente no Telegram, como CTA principal. */
+.btn-tiktok,
+.tiktok-logo {
+    animation: none;
+}
+
+/* Ritmo vertical um pouco mais uniforme. */
+.subtitle {
+    margin-bottom: 13px;
+}
+
+.btn-telegram {
+    margin-top: 8px;
+}
+
+.btn-tiktok {
+    margin-top: 10px;
+}
+
+.secure-badge-wrap {
+    padding-top: 16px;
+}
+
+.secure-lock {
+    transform: translateY(-0.2px);
+}
+
 </style>
 </head>
 
@@ -762,10 +875,6 @@ body.dark-mode .theme-hint::before {
     <div class="title">Ficou Curioso?</div>
     <div class="subtitle">Acesso exclusivo ao conteúdo que não posto em nenhum outro lugar 🤭</div>
 
-    <div class="online-status">
-        <span class="dot"></span> online agora
-    </div>
-
     <a href="https://t.me/elianeefen_bot"
        id="telegramBtn"
        class="btn btn-telegram"
@@ -780,7 +889,7 @@ body.dark-mode .theme-hint::before {
         </svg>
         <span class="telegram-btn-text">
             <span class="telegram-btn-main">Meu Grupinho VIP</span>
-            <span class="telegram-btn-sub">Acesse o conteúdo exclusivo</span>
+            <span class="telegram-online-status"><span class="dot"></span> online agora</span>
         </span>
         <span class="telegram-arrow" aria-hidden="true">›</span>
     </a>
@@ -800,8 +909,15 @@ body.dark-mode .theme-hint::before {
             </g>
         </svg>
         <span class="telegram-btn-text">
-            <span class="telegram-btn-main">meu TikTok</span>
-            <span class="telegram-btn-sub">Acesse meu perfil oficial</span>
+            <span class="tiktok-title-row">
+                <span class="telegram-btn-main">meu TikTok</span>
+                <span class="verified-icon" aria-label="Conta verificada" title="Conta verificada">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M12 2.35l2.08 1.45 2.51-.18 1.03 2.30 2.31 1.01-.20 2.51L21.2 11.5l-1.47 2.05.20 2.51-2.31 1.01-1.03 2.30-2.51-.18L12 20.65l-2.08-1.46-2.51.18-1.03-2.30-2.31-1.01.20-2.51L2.8 11.5l1.47-2.06-.20-2.51 2.31-1.01 1.03-2.30 2.51.18L12 2.35z" fill="#3897F0"/>
+                        <path d="M8.15 11.95l2.35 2.35 5.35-5.35" stroke="#fff" stroke-width="1.95" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+            </span>
         </span>
         <span class="tiktok-arrow" aria-hidden="true">›</span>
     </a>
