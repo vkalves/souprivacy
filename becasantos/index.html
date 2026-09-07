@@ -1,0 +1,205 @@
+<!DOCTYPE html><html lang="pt-BR"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clique nos três pontinhos -&gt;</title>
+
+<style>
+:root{
+  --bg:#ffffff;
+  --text:#111111;
+
+  /* 🔵 AZUL DA PALETA */
+  --red:#0088CC;
+  --tan:#A19679;
+
+  --muted:#A19679;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+}
+
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+}
+
+.wrap{
+  width:100%;
+  padding:22px 16px 30px;
+}
+
+/* ===== POPUP ===== */
+
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.35);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+.popup{
+  width:92%;
+  max-width:400px;
+  background:#fff;
+  border-radius:16px;
+  padding:24px 20px;
+  text-align:center;
+  box-shadow:0 12px 40px rgba(0,0,0,.15);
+}
+
+.popup-title{
+  font-size:20px;
+  font-weight:900;
+  color:var(--red);
+  margin-bottom:14px;
+}
+
+.popup-text{
+  font-size:16px;
+  line-height:1.5;
+  color:#333;
+  margin-bottom:18px;
+  font-weight:600;
+}
+
+.highlight{
+  color:var(--red);
+  font-weight:900;
+}
+
+.popup-btn{
+  width:100%;
+  padding:14px;
+  border-radius:999px;
+  border:0;
+  font-weight:900;
+  font-size:15px;
+  cursor:pointer;
+  background:var(--red);
+  color:#fff;
+}
+
+/* ===== CONTEÚDO ===== */
+
+.title{
+  text-align:center;
+  font-weight:900;
+  font-size:clamp(22px, 6vw, 28px);
+  line-height:1.1;
+  margin:0 0 20px;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+
+.red{
+  color:var(--red);
+}
+
+.mediaBox{
+  width:100%;
+  border-radius:14px;
+  overflow:hidden;
+  background:#f5f5f5;
+  border:1px solid #eee;
+  margin:6px 0 20px;
+}
+
+.mediaBox img{
+  width:100%;
+  display:block;
+}
+
+.step{
+  text-align:center;
+  font-weight:900;
+  text-transform:uppercase;
+  margin:0 0 14px;
+  line-height:1.1;
+  font-size:clamp(22px, 6vw, 28px);
+}
+
+.step1{
+  white-space:nowrap;
+}
+
+.step .muted{
+  display:block;
+  color:var(--muted);
+  font-weight:600;
+  font-size:clamp(13px, 4vw, 15px);
+  margin-top:6px;
+}
+
+/* BOTÃO */
+.cta{
+  margin-top:20px;
+  width:100%;
+  border:0;
+  border-radius:999px;
+  padding:18px 16px;
+  cursor:pointer;
+  font-weight:900;
+  font-size:clamp(16px, 5vw, 18px);
+  text-transform:uppercase;
+  color:#fff;
+  background:var(--red);
+}
+</style>
+</head>
+
+<body>
+
+<!-- POPUP -->
+<div class="overlay" id="popup">
+  <div class="popup">
+    <div class="popup-title">⚠️ AVISO</div>
+
+    <div class="popup-text">
+      O navegador do <b>TikTok bloqueia automaticamente o acesso ao Telegram</b>.
+      <br><br>
+      Para continuar, é <span class="highlight">necessário concluir o tutorial a seguir</span>.
+    </div>
+
+    <button class="popup-btn" onclick="fecharPopup()">ENTENDI</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <h1 class="title">
+    SIGA O <span class="red">TUTORIAL</span> ABAIXO:
+  </h1>
+
+  <div class="mediaBox">
+    <img src="images/image3.gif" alt="Tutorial abrir no navegador">
+  </div>
+
+  <div class="step step1">
+    <span class="red">1:</span> TOQUE NOS <span class="red">3 PONTINHOS</span>
+    <span class="muted">(canto superior)</span>
+  </div>
+
+  <div class="step">
+    <span class="red">2:</span> ESCOLHA<br>
+    <span class="red">“ABRIR NO NAVEGADOR”</span>
+  </div>
+
+  <button class="cta" onclick="window.location.href='https://t.me/becasantoss_bot'">
+    ABRIR O TELEGRAM
+  </button>
+
+</div>
+
+<script>
+function fecharPopup(){
+  document.getElementById("popup").style.display="none";
+}
+</script>
+
+
+</body></html>
