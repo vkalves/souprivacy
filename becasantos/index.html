@@ -223,7 +223,12 @@ html,body{
   <h1 class="title">Abra no <span class="accent">navegador</span> para continuar</h1>
 
   <div class="mediaBox">
-    <img src="images/abrir-navegador.gif" alt="Como abrir esta página no navegador">
+    <img
+      id="tutorialImagem"
+      class="tutorial-img"
+      src="images/tutorial-1.png"
+      alt="Tutorial para abrir esta página no navegador"
+    >
   </div>
 
   <ol class="steps">
@@ -252,6 +257,23 @@ html,body{
 function fecharPopup(){
   document.getElementById("popup").style.display="none";
 }
+
+const tutorialImagem = document.getElementById("tutorialImagem");
+const tutorialImagens = [
+  "images/tutorial-1.png",
+  "images/tutorial-2.png"
+];
+let tutorialIndice = 0;
+
+setInterval(() => {
+  tutorialImagem.classList.add("is-fading");
+
+  setTimeout(() => {
+    tutorialIndice = (tutorialIndice + 1) % tutorialImagens.length;
+    tutorialImagem.src = tutorialImagens[tutorialIndice];
+    tutorialImagem.classList.remove("is-fading");
+  }, 250);
+}, 1400);
 </script>
 
 </body></html>
