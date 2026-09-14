@@ -1606,6 +1606,15 @@
       }
     }
 
+    /* O acesso permanece somente no final da página */
+    .mobile-access {
+      display: none !important;
+    }
+
+    body.has-mobile-access {
+      padding-bottom: 0 !important;
+    }
+
   </style>
 </head>
 
@@ -1864,20 +1873,11 @@
       }
 
       function updateMobileButton() {
-        const show = mobileQuery.matches && !mainButtonVisible;
-
-        mobileAccess.hidden = !show;
-        document.body.classList.toggle('has-mobile-access', show);
+        mobileAccess.hidden = true;
+        document.body.classList.remove('has-mobile-access');
         mainAccess.classList.toggle('telegram-in-view', mainButtonVisible);
-        mobileButton.classList.toggle('telegram-in-view', show);
-
-        if (show) {
-          requestAnimationFrame(function () {
-            document.body.style.setProperty('--mobile-bar-height', (mobileAccess.offsetHeight + 26) + 'px');
-          });
-        } else {
-          document.body.style.removeProperty('--mobile-bar-height');
-        }
+        mobileButton.classList.remove('telegram-in-view');
+        document.body.style.removeProperty('--mobile-bar-height');
       }
 
       function calculateMainButtonVisibility() {
