@@ -2180,6 +2180,45 @@
       }
     }
 
+
+    /* Ajustes finais da expansão da foto de perfil */
+    .profile-viewer::backdrop {
+      background: rgba(24, 16, 12, .68);
+      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(16px);
+    }
+
+    .profile-viewer-content {
+      gap: 0;
+    }
+
+    .profile-photo-ring {
+      --expanded-profile-size: min(72vw, 72vh, 330px);
+      width: var(--expanded-profile-size);
+      min-width: var(--expanded-profile-size);
+      max-width: var(--expanded-profile-size);
+      height: var(--expanded-profile-size);
+      min-height: var(--expanded-profile-size);
+      max-height: var(--expanded-profile-size);
+      flex: 0 0 var(--expanded-profile-size);
+      aspect-ratio: auto;
+      border-radius: 50%;
+    }
+
+    .avatar.avatar-viewed {
+      cursor: default;
+    }
+
+    .avatar.avatar-viewed:active {
+      transform: none;
+    }
+
+    @media (max-width: 640px) {
+      .profile-photo-ring {
+        --expanded-profile-size: min(78vw, 70dvh, 300px);
+      }
+    }
+
   </style>
 </head>
 
@@ -2360,15 +2399,10 @@
   </dialog>
 
   <dialog class="profile-viewer" id="profile-viewer" aria-label="Foto de perfil ampliada">
-    <button class="profile-viewer-close" type="button" aria-label="Fechar foto de perfil">×</button>
     <div class="profile-viewer-content">
       <div class="profile-photo-ring">
         <img src="elianeperfil.jpg" alt="Foto ampliada de Eliane Fen" width="640" height="640" decoding="async">
       </div>
-      <span class="profile-viewer-name">
-        Eliane Fen
-        <svg class="verified-badge" aria-hidden="true"><use href="#verified"/></svg>
-      </span>
     </div>
   </dialog>
 
@@ -2381,6 +2415,7 @@
       const TEMPO_PREVIA_VIDEO = 5000;
       const TEMPO_MAXIMO_CARREGAMENTO = 15000;
       const PREVIEW_STORAGE_KEY = 'elianeFenViewedPreviewsV3';
+      const PROFILE_STORAGE_KEY = 'elianeFenProfileViewedV1';
 
       const viewer = document.getElementById('preview-viewer');
       const viewerTitle = document.getElementById('viewer-title');
@@ -2393,7 +2428,6 @@
       const mobileQuery = window.matchMedia('(max-width: 640px)');
       const profileAvatar = document.getElementById('profile-avatar');
       const profileViewer = document.getElementById('profile-viewer');
-      const profileViewerClose = profileViewer.querySelector('.profile-viewer-close');
 
       let closeTimer = 0;
       let loadTimer = 0;
@@ -2401,6 +2435,31 @@
       let mainButtonVisible = false;
       let videoPlayCount = 0;
       let profileCloseTimer = 0;
+
+      function profileWasViewed() {
+        try {
+          return localStorage.getItem(PROFILE_STORAGE_KEY) === '1';
+        } catch (error) {
+          return false;
+        }
+      }
+
+      function lockProfileAvatar() {
+        profileAvatar.disabled = true;
+        profileAvatar.classList.add('avatar-viewed');
+        profileAvatar.setAttribute('aria-label', 'Foto de perfil já visualizada');
+        profileAvatar.setAttribute('aria-disabled', 'true');
+      }
+
+      function markProfileAsViewed() {
+        try {
+          localStorage.setItem(PROFILE_STORAGE_KEY, '1');
+        } catch (error) {
+          /* A foto continua bloqueada durante a sessão atual. */
+        }
+
+        lockProfileAvatar();
+      }
 
       function closeProfileViewer() {
         clearTimeout(profileCloseTimer);
@@ -2417,6 +2476,11 @@
       }
 
       function openProfileViewer() {
+        if (profileAvatar.disabled || profileWasViewed()) {
+          lockProfileAvatar();
+          return;
+        }
+
         clearTimeout(profileCloseTimer);
 
         if (typeof profileViewer.showModal === 'function') {
@@ -2425,12 +2489,16 @@
           profileViewer.setAttribute('open', '');
         }
 
+        markProfileAsViewed();
         document.body.classList.add('profile-open');
-        profileCloseTimer = setTimeout(closeProfileViewer, 2000);
+        profileCloseTimer = setTimeout(closeProfileViewer, 3000);
+      }
+
+      if (profileWasViewed()) {
+        lockProfileAvatar();
       }
 
       profileAvatar.addEventListener('click', openProfileViewer);
-      profileViewerClose.addEventListener('click', closeProfileViewer);
 
       profileViewer.addEventListener('close', function () {
         clearTimeout(profileCloseTimer);
@@ -2438,10 +2506,8 @@
         document.body.classList.remove('profile-open');
       });
 
-      profileViewer.addEventListener('click', function (event) {
-        if (event.target === profileViewer) {
-          closeProfileViewer();
-        }
+      profileViewer.addEventListener('cancel', function (event) {
+        event.preventDefault();
       });
 
       document.querySelectorAll('[data-access]').forEach(function (link) {
