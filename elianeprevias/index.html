@@ -1968,35 +1968,77 @@
     }
 
 
-    /* Animação simples do status online */
+    /* Animação reforçada do status online */
     .online-status {
-      animation: online-status-breathe 2.2s ease-in-out infinite;
+      position: relative;
+      isolation: isolate;
+      animation: online-status-strong 1.65s ease-in-out infinite;
       will-change: transform, box-shadow;
     }
 
-    .online-dot {
-      animation: online-dot-ring 1.8s ease-out infinite;
+    .online-status::after {
+      content: "";
+      position: absolute;
+      inset: -4px;
+      z-index: -1;
+      border: 1.5px solid rgba(40, 167, 69, .42);
+      border-radius: inherit;
+      pointer-events: none;
+      animation: online-status-halo 1.65s ease-out infinite;
     }
 
-    @keyframes online-status-breathe {
+    .online-dot {
+      animation: online-dot-strong 1.25s ease-out infinite;
+    }
+
+    @keyframes online-status-strong {
       0%,
       100% {
-        transform: translateY(0);
-        box-shadow: 0 3px 10px rgba(40, 167, 69, .1);
+        transform: translateY(0) scale(1);
+        border-color: #9be3b4;
+        box-shadow: 0 3px 10px rgba(40, 167, 69, .14);
       }
       50% {
-        transform: translateY(-1px);
-        box-shadow: 0 6px 17px rgba(40, 167, 69, .2);
+        transform: translateY(-1px) scale(1.035);
+        border-color: #69d58d;
+        box-shadow:
+          0 8px 22px rgba(40, 167, 69, .28),
+          0 0 0 4px rgba(40, 167, 69, .08);
       }
     }
 
-    @keyframes online-dot-ring {
+    @keyframes online-status-halo {
       0% {
-        box-shadow: 0 0 0 0 rgba(40, 167, 69, .45);
+        opacity: .68;
+        transform: scale(.96);
       }
-      70%,
+      75%,
       100% {
-        box-shadow: 0 0 0 6px rgba(40, 167, 69, 0);
+        opacity: 0;
+        transform: scale(1.12);
+      }
+    }
+
+    @keyframes online-dot-strong {
+      0% {
+        transform: scale(.92);
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, .68);
+      }
+      45% {
+        transform: scale(1.22);
+      }
+      80%,
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 8px rgba(40, 167, 69, 0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .online-status,
+      .online-status::after,
+      .online-dot {
+        animation: none !important;
       }
     }
 
