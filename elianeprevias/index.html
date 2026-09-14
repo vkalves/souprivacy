@@ -2293,39 +2293,6 @@
       z-index: 4;
     }
 
-    .protection-watermark {
-      position: absolute;
-      inset: -14%;
-      z-index: 2;
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      grid-template-rows: repeat(3, minmax(0, 1fr));
-      align-items: center;
-      justify-items: center;
-      gap: 5%;
-      overflow: hidden;
-      color: rgba(255, 255, 255, .28);
-      font-size: clamp(9px, 2vw, 14px);
-      font-weight: 750;
-      line-height: 1.2;
-      letter-spacing: .06em;
-      text-align: center;
-      text-shadow:
-        0 1px 3px rgba(0, 0, 0, .72),
-        0 0 8px rgba(0, 0, 0, .34);
-      transform: rotate(-19deg) scale(1.08);
-      pointer-events: none;
-      user-select: none;
-    }
-
-    .protection-watermark span {
-      width: 100%;
-      padding: 0 8px;
-    }
-
-    .profile-viewer .protection-watermark {
-      color: rgba(255, 255, 255, .24);
-    }
 
     .privacy-shield {
       position: fixed;
@@ -2558,14 +2525,6 @@
     </div>
     <img class="viewer-image" id="viewer-image" alt="" hidden>
     <video class="viewer-video" id="viewer-video" muted playsinline webkit-playsinline preload="none" disablepictureinpicture hidden></video>
-    <div class="protection-watermark" aria-hidden="true">
-      <span>ELIANE FEN • CONTEÚDO PROTEGIDO</span>
-      <span>ELIANE FEN • CONTEÚDO PROTEGIDO</span>
-      <span>ELIANE FEN • CONTEÚDO PROTEGIDO</span>
-      <span>ELIANE FEN • CONTEÚDO PROTEGIDO</span>
-      <span>ELIANE FEN • CONTEÚDO PROTEGIDO</span>
-      <span>ELIANE FEN • CONTEÚDO PROTEGIDO</span>
-    </div>
     <p class="viewer-message" id="viewer-message" role="status">Carregando prévia…</p>
   </dialog>
 
@@ -2574,14 +2533,6 @@
       <div class="profile-photo-ring">
         <img src="elianeperfil.jpg" alt="Foto ampliada de Eliane Fen" width="640" height="640" decoding="async">
       </div>
-    </div>
-    <div class="protection-watermark" aria-hidden="true">
-      <span>ELIANE FEN • CONTEÚDO PROTEGIDO</span>
-      <span>ELIANE FEN • CONTEÚDO PROTEGIDO</span>
-      <span>ELIANE FEN • CONTEÚDO PROTEGIDO</span>
-      <span>ELIANE FEN • CONTEÚDO PROTEGIDO</span>
-      <span>ELIANE FEN • CONTEÚDO PROTEGIDO</span>
-      <span>ELIANE FEN • CONTEÚDO PROTEGIDO</span>
     </div>
   </dialog>
 
