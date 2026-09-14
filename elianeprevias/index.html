@@ -1283,6 +1283,329 @@
       }
     }
 
+
+    /* Experiência mobile dedicada */
+    @media (max-width: 640px) {
+      html,
+      body {
+        width: 100%;
+        overflow-x: clip;
+      }
+
+      body {
+        min-height: 100svh;
+        padding: 0;
+        background: #fff;
+      }
+
+      .site-shell {
+        width: 100%;
+        min-height: 100svh;
+        margin: 0;
+        overflow: hidden;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .container {
+        padding: 0 12px 22px;
+      }
+
+      .page-heading {
+        grid-template-columns: 40px minmax(0, 1fr) 40px;
+        min-height: calc(56px + env(safe-area-inset-top));
+        padding-top: env(safe-area-inset-top);
+        font-size: 15px;
+      }
+
+      .back {
+        width: 38px;
+        height: 38px;
+        justify-self: start;
+        background: #fff;
+      }
+
+      .back .icon {
+        width: 22px;
+        height: 22px;
+      }
+
+      .heading-accent {
+        width: 34px;
+        height: 34px;
+        justify-self: end;
+      }
+
+      .heading-accent .icon {
+        width: 19px;
+        height: 19px;
+      }
+
+      .cover {
+        width: auto;
+        height: clamp(150px, 45vw, 188px);
+        margin: 0 -12px;
+        border-radius: 0;
+        background-position: center;
+      }
+
+      .topbar {
+        min-height: 58px;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 0 4px;
+      }
+
+      .identity {
+        margin-top: -41px;
+      }
+
+      .avatar {
+        width: 92px;
+        height: 92px;
+        border-width: 4px;
+        box-shadow: 0 7px 22px rgba(57, 29, 12, .15);
+      }
+
+      .avatar::after {
+        right: 1px;
+        bottom: 4px;
+        width: 13px;
+        height: 13px;
+        border-width: 3px;
+      }
+
+      .online-status {
+        min-height: 34px;
+        margin: 11px 1px 0 auto;
+        padding: 7px 11px;
+        font-size: 11px;
+      }
+
+      .intro {
+        padding: 7px 4px 18px;
+      }
+
+      h1 {
+        gap: 7px;
+        font-size: clamp(24px, 7vw, 27px);
+        line-height: 1.15;
+      }
+
+      h1 .verified-badge {
+        min-width: 19px;
+        min-height: 19px;
+      }
+
+      .handle {
+        margin: 6px 0 11px;
+        padding: 4px 8px;
+        font-size: 10px;
+      }
+
+      .bio {
+        max-width: none;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .gallery-card {
+        padding-top: 5px;
+      }
+
+      .gallery-heading {
+        min-height: 51px;
+        gap: 8px;
+        padding: 0 2px;
+      }
+
+      h2 {
+        gap: 7px;
+        font-size: 15px;
+        white-space: nowrap;
+      }
+
+      h2 .icon {
+        width: 29px;
+        height: 29px;
+        padding: 6px;
+      }
+
+      .gallery-note {
+        gap: 4px;
+        padding: 6px 8px;
+        font-size: 10px;
+        white-space: nowrap;
+      }
+
+      .gallery-note .icon {
+        width: 13px;
+        height: 13px;
+      }
+
+      .gallery {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 7px;
+        padding: 6px 0 14px;
+      }
+
+      .preview {
+        min-height: 0;
+        aspect-ratio: 4 / 5;
+        border-radius: 13px;
+        box-shadow: 0 4px 13px rgba(55, 31, 17, .075);
+      }
+
+      .preview:active {
+        transform: scale(.985);
+      }
+
+      .locked {
+        gap: 7px;
+      }
+
+      .lock-circle {
+        width: 44px;
+        height: 44px;
+      }
+
+      .lock-circle .icon {
+        width: 19px;
+        height: 19px;
+      }
+
+      .locked-label {
+        font-size: 10px;
+      }
+
+      .number {
+        right: 8px;
+        bottom: 8px;
+      }
+
+      .access {
+        margin-top: 5px;
+        padding: 22px 12px 19px;
+        border-radius: 16px;
+      }
+
+      .notice {
+        max-width: 310px;
+        margin-bottom: 12px;
+        font-size: 12px;
+      }
+
+      .access .cta {
+        width: 100%;
+        min-height: 53px;
+        padding: 13px 16px;
+        font-size: 13px;
+      }
+
+      .trust {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+        margin-top: 15px;
+      }
+
+      .trust li {
+        min-width: 0;
+        min-height: 55px;
+        flex-direction: column;
+        justify-content: center;
+        gap: 4px;
+        padding: 7px 4px;
+        border-radius: 12px;
+        font-size: 9px;
+        line-height: 1.2;
+        text-align: center;
+      }
+
+      .trust .icon {
+        width: 16px;
+        height: 16px;
+      }
+
+      footer {
+        padding: 18px 0 4px;
+      }
+
+      .mobile-access {
+        right: 8px;
+        bottom: max(8px, env(safe-area-inset-bottom));
+        left: 8px;
+        padding: 6px;
+        border: 1px solid rgba(237, 224, 215, .9);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, .92);
+        box-shadow: 0 10px 32px rgba(65, 33, 16, .18);
+        backdrop-filter: blur(12px);
+      }
+
+      .mobile-access .cta {
+        min-height: 50px;
+        border-radius: 13px;
+        font-size: 13px;
+      }
+
+      .viewer {
+        width: calc(100vw - 16px);
+        max-height: calc(100dvh - 16px);
+        border-radius: 18px;
+      }
+
+      .viewer-head {
+        min-height: 54px;
+        padding: 9px 12px 9px 16px;
+      }
+
+      .close-viewer {
+        width: 40px;
+        height: 40px;
+      }
+
+      .viewer-image,
+      .viewer-video {
+        height: min(70dvh, 620px);
+      }
+
+      .viewer-message {
+        padding: 11px 12px 14px;
+        font-size: 12px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .gallery-note {
+        padding-inline: 6px;
+        font-size: 9px;
+      }
+
+      .gallery-note .icon {
+        display: none;
+      }
+
+      .trust li {
+        font-size: 8.5px;
+      }
+    }
+
+    @media (max-width: 340px) {
+      .gallery-note {
+        display: none;
+      }
+
+      .gallery-heading {
+        justify-content: flex-start;
+      }
+
+      .locked-label {
+        display: none;
+      }
+    }
+
   </style>
 </head>
 
