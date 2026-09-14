@@ -2602,6 +2602,25 @@
       const TEMPO_MAXIMO_CARREGAMENTO = 15000;
       const PREVIEW_STORAGE_KEY = 'elianeFenViewedPreviewsV3';
 
+      /* ?reset=previews libera novamente as prévias apenas neste aparelho. */
+      try {
+        const resetParams = new URLSearchParams(window.location.search);
+
+        if (resetParams.get('reset') === 'previews') {
+          localStorage.removeItem(PREVIEW_STORAGE_KEY);
+          resetParams.delete('reset');
+
+          const cleanQuery = resetParams.toString();
+          const cleanUrl = window.location.pathname +
+            (cleanQuery ? '?' + cleanQuery : '') +
+            window.location.hash;
+
+          window.history.replaceState(null, '', cleanUrl);
+        }
+      } catch (error) {
+        /* O site continua funcionando se o armazenamento estiver bloqueado. */
+      }
+
       const viewer = document.getElementById('preview-viewer');
       const viewerTitle = document.getElementById('viewer-title');
       const viewerImage = document.getElementById('viewer-image');
