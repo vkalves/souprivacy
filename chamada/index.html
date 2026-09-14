@@ -86,7 +86,6 @@
     .phone[data-state="ended"] .avatar-ring{animation:none;opacity:.5}.phone[data-state="ended"] .avatar-ring::after{animation:none;opacity:.25}
 
     @media(max-height:700px){.stage{padding-top:18px}.avatar-wrap{width:138px;height:138px;margin:22px auto 18px}.name{font-size:30px}.controls{bottom:calc(10px + env(safe-area-inset-bottom))}.topbar{padding-top:calc(12px + env(safe-area-inset-top))}}
-    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}
   </style>
 </head>
 <body>
@@ -132,9 +131,31 @@
   </main>
 
   <script>
-    const phone=document.querySelector('.phone'),callType=document.getElementById('callType'),subStatus=document.getElementById('subStatus'),timerEl=document.getElementById('timer'),acceptBtn=document.getElementById('acceptBtn'),declineBtn=document.getElementById('declineBtn'),endBtn=document.getElementById('endBtn'),restartBtn=document.getElementById('restartBtn'),soundToggle=document.getElementById('soundToggle'),muteMicBtn=document.getElementById('muteMicBtn'),videoBtn=document.getElementById('videoBtn'),flipBtn=document.getElementById('flipBtn'),remoteVideo=document.getElementById('remoteVideo'),selfVideo=document.getElementById('selfVideo'),selfCam=document.getElementById('selfCam');
-    let state='incoming',muted=false,ringing=false,ringTimer=null,vibTimer=null,callTimer=null,seconds=0,audioCtx=null,flipping=false,facingMode='user',localStream=null;
-    function setState(s){state=s;phone.dataset.state=s}function ensureAudio(){if(!audioCtx){const AC=window.AudioContext||window.webkitAudioContext;if(AC)audioCtx=new AC()}if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume()}
+    const phone=document.querySelector('.phone'),callType=document.getElementById('callType'),subStatus=document.getElementById('subStatus'),timerEl=document.getElementById('timer'),acceptBtn=document.getElementById('acceptBtn'),declineBtn=document.getElementById('declineBtn'),endBtn=document.getElementById('endBtn'),restartBtn=document.getElementById('restartBtn'),soundToggle=document.getElementById('soundToggle'),muteMicBtn=document.getElementById('muteMicBtn'),videoBtn=document.getElementById('videoBtn'),flipBtn=document.getElementById('flipBtn'),remoteVideo=document.getElementById('remoteVideo'),selfVideo=document.getElementById('selfVideo'),selfCam=document.getElementById('selfCam'),avatarWrap=document.querySelector('.avatar-wrap'),controls=document.querySelector('.controls');
+    let state='incoming',muted=false,ringing=false,ringTimer=null,vibTimer=null,callTimer=null,seconds=0,audioCtx=null,flipping=false,facingMode='user',localStream=null,jsMotion=[];
+
+    function clearForcedMotion(){jsMotion.forEach(a=>{try{a.cancel()}catch(e){}});jsMotion=[]}
+    function forceIncomingMotion(){
+      clearForcedMotion();
+      if(!Element.prototype.animate||state!=='incoming')return;
+      jsMotion.push(acceptBtn.animate([
+        {transform:'translateY(0) scale(1)',boxShadow:'0 12px 26px rgba(255,137,0,.22)'},
+        {transform:'translateY(-5px) scale(1.035)',boxShadow:'0 20px 44px rgba(255,137,0,.46)',offset:.46},
+        {transform:'translateY(0) scale(1)',boxShadow:'0 12px 26px rgba(255,137,0,.22)'}
+      ],{duration:1500,iterations:Infinity,easing:'ease-in-out'}));
+      jsMotion.push(declineBtn.animate([
+        {transform:'translateX(0)'},{transform:'translateX(0)',offset:.72},{transform:'translateX(-3px)',offset:.79},{transform:'translateX(3px)',offset:.86},{transform:'translateX(0)'}
+      ],{duration:2600,iterations:Infinity,easing:'ease-in-out'}));
+      jsMotion.push(avatarWrap.animate([
+        {transform:'translateY(0) scale(1)'},{transform:'translateY(-7px) scale(1.015)'},{transform:'translateY(0) scale(1)'}
+      ],{duration:2800,iterations:Infinity,easing:'ease-in-out'}));
+      controls.animate([{opacity:0,transform:'translateY(30px) scale(.96)'},{opacity:1,transform:'translateY(0) scale(1)'}],{duration:700,easing:'cubic-bezier(.16,1,.3,1)',fill:'both'});
+      document.querySelector('.name-line')?.animate([{opacity:0,transform:'translateY(12px)'},{opacity:1,transform:'translateY(0)'}],{duration:650,delay:180,easing:'ease-out',fill:'both'});
+      subStatus.animate([{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'translateY(0)'}],{duration:650,delay:260,easing:'ease-out',fill:'both'});
+    }
+
+    function setState(s){state=s;phone.dataset.state=s;if(s!=='incoming')clearForcedMotion()}
+    function ensureAudio(){if(!audioCtx){const AC=window.AudioContext||window.webkitAudioContext;if(AC)audioCtx=new AC()}if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume()}
     function beep(freq,start,dur,vol=.12){if(!audioCtx)return;const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.value=freq;o.connect(g);g.connect(audioCtx.destination);const t=audioCtx.currentTime+start;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.03);g.gain.setValueAtTime(vol,t+dur-.05);g.gain.linearRampToValueAtTime(0,t+dur);o.start(t);o.stop(t+dur+.02)}
     function ringPattern(){ensureAudio();beep(1046,0,.17);beep(1318,.20,.18);beep(1046,.48,.18)}function startRinging(){if(ringing||muted)return;ringing=true;ringPattern();ringTimer=setInterval(ringPattern,2400)}function stopRinging(){ringing=false;if(ringTimer){clearInterval(ringTimer);ringTimer=null}}
     function startVibration(){if(!('vibrate'in navigator))return;try{navigator.vibrate([420,320,420])}catch(e){}vibTimer=setInterval(()=>{try{navigator.vibrate([420,320,420])}catch(e){}},2400)}function stopVibration(){if(vibTimer){clearInterval(vibTimer);vibTimer=null}if('vibrate'in navigator)try{navigator.vibrate(0)}catch(e){}}
@@ -145,12 +166,12 @@
     function stopCamera(){if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null}selfVideo.srcObject=null;selfCam.classList.remove('no-video','off')}
     remoteVideo.addEventListener('loadeddata',()=>phone.classList.add('has-remote'));remoteVideo.addEventListener('error',()=>phone.classList.remove('has-remote'));function playRemoteNow(){try{remoteVideo.muted=false;const p=remoteVideo.play();if(p?.catch)p.catch(()=>{remoteVideo.muted=true;remoteVideo.play().catch(()=>{})})}catch(e){}}function stopRemoteVideo(){try{remoteVideo.pause();remoteVideo.currentTime=0}catch(e){}}
 
-    acceptBtn.addEventListener('click',()=>{if(state!=='incoming')return;stopRinging();stopVibration();ensureAudio();startCamera();playRemoteNow();phone.classList.add('answering');setTimeout(()=>{phone.classList.remove('answering');setState('connecting');callType.textContent='Conectando';subStatus.textContent='Preparando chamada…';setTimeout(()=>{setState('in-call');callType.textContent='Chamada de vídeo';startCallTimer()},1200)},280)});
-    declineBtn.addEventListener('click',()=>{if(state!=='incoming')return;stopRinging();stopVibration();phone.classList.add('declining');setTimeout(()=>{phone.classList.remove('declining');setState('ended');callType.textContent='Chamada finalizada';subStatus.textContent='Você recusou esta chamada.'},300)});
+    acceptBtn.addEventListener('click',()=>{if(state!=='incoming')return;stopRinging();stopVibration();ensureAudio();startCamera();playRemoteNow();clearForcedMotion();phone.classList.add('answering');setTimeout(()=>{phone.classList.remove('answering');setState('connecting');callType.textContent='Conectando';subStatus.textContent='Preparando chamada…';setTimeout(()=>{setState('in-call');callType.textContent='Chamada de vídeo';startCallTimer()},1200)},280)});
+    declineBtn.addEventListener('click',()=>{if(state!=='incoming')return;stopRinging();stopVibration();clearForcedMotion();phone.classList.add('declining');setTimeout(()=>{phone.classList.remove('declining');setState('ended');callType.textContent='Chamada finalizada';subStatus.textContent='Você recusou esta chamada.'},300)});
     endBtn.addEventListener('click',()=>{stopCallTimer();stopCamera();stopRemoteVideo();const dur=timerEl.textContent;setState('ended');callType.textContent='Chamada encerrada';subStatus.textContent='Duração da chamada: '+dur});restartBtn.addEventListener('click',resetCall);
     soundToggle.addEventListener('click',()=>{muted=!muted;soundToggle.classList.toggle('muted',muted);if(muted)stopRinging();else if(state==='incoming')startRinging()});muteMicBtn.addEventListener('click',()=>{muteMicBtn.classList.toggle('off');applyMicState()});videoBtn.addEventListener('click',()=>{videoBtn.classList.toggle('off');applyVideoState()});flipBtn.addEventListener('click',flipCamera);
-    function resetCall(){stopCallTimer();stopCamera();stopRemoteVideo();phone.classList.remove('answering','declining');setState('incoming');callType.textContent='Chamada de vídeo recebida';subStatus.textContent='Ela está tentando falar com você agora.';seconds=0;timerEl.textContent='00:00';facingMode='user';updateMirror();muteMicBtn.classList.remove('off');videoBtn.classList.remove('off');startVibration();if(!muted)startRinging()}
-    updateMirror();startVibration();if(!muted)startRinging();document.addEventListener('pointerdown',function kick(){ensureAudio();if(!muted&&state==='incoming'&&!ringing)startRinging()},{once:true});
+    function resetCall(){stopCallTimer();stopCamera();stopRemoteVideo();phone.classList.remove('answering','declining');setState('incoming');callType.textContent='Chamada de vídeo recebida';subStatus.textContent='Ela está tentando falar com você agora.';seconds=0;timerEl.textContent='00:00';facingMode='user';updateMirror();muteMicBtn.classList.remove('off');videoBtn.classList.remove('off');startVibration();if(!muted)startRinging();requestAnimationFrame(forceIncomingMotion)}
+    updateMirror();startVibration();if(!muted)startRinging();requestAnimationFrame(forceIncomingMotion);document.addEventListener('pointerdown',function kick(){ensureAudio();if(!muted&&state==='incoming'&&!ringing)startRinging()},{once:true});
   </script>
 </body>
 </html>
