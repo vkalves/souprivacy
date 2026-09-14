@@ -2279,6 +2279,116 @@
       }
     }
 
+
+    /* Proteção visual e barreiras contra cópia casual */
+    img,
+    video {
+      -webkit-user-drag: none;
+      -webkit-touch-callout: none;
+      user-select: none;
+    }
+
+    .viewer-head,
+    .viewer-message {
+      position: relative;
+      z-index: 4;
+    }
+
+    .protection-watermark {
+      position: absolute;
+      inset: -14%;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: repeat(3, minmax(0, 1fr));
+      align-items: center;
+      justify-items: center;
+      gap: 5%;
+      overflow: hidden;
+      color: rgba(255, 255, 255, .28);
+      font-size: clamp(9px, 2vw, 14px);
+      font-weight: 750;
+      line-height: 1.2;
+      letter-spacing: .06em;
+      text-align: center;
+      text-shadow:
+        0 1px 3px rgba(0, 0, 0, .72),
+        0 0 8px rgba(0, 0, 0, .34);
+      transform: rotate(-19deg) scale(1.08);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .protection-watermark span {
+      width: 100%;
+      padding: 0 8px;
+    }
+
+    .profile-viewer .protection-watermark {
+      color: rgba(255, 255, 255, .24);
+    }
+
+    .privacy-shield {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: grid;
+      place-items: center;
+      visibility: hidden;
+      background: rgba(255, 250, 246, .96);
+      opacity: 0;
+      -webkit-backdrop-filter: blur(24px);
+      backdrop-filter: blur(24px);
+      transition: opacity .12s ease, visibility 0s linear .12s;
+      pointer-events: none;
+    }
+
+    .privacy-shield.is-active {
+      visibility: visible;
+      opacity: 1;
+      transition-delay: 0s;
+      pointer-events: auto;
+    }
+
+    .privacy-shield-content {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      gap: 10px;
+      color: #9f430c;
+      font-size: 13px;
+      letter-spacing: .02em;
+    }
+
+    .privacy-shield-content .icon {
+      width: 34px;
+      height: 34px;
+      color: var(--orange);
+    }
+
+    @media (max-width: 640px) {
+      .protection-watermark {
+        inset: -10%;
+        gap: 3%;
+        font-size: clamp(8px, 2.7vw, 11px);
+      }
+    }
+
+    @media print {
+      body > * {
+        display: none !important;
+      }
+
+      body::after {
+        content: "Conteúdo protegido — Eliane Fen";
+        display: grid;
+        min-height: 100vh;
+        place-items: center;
+        color: #8e3d0c;
+        font: 700 18px/1.4 sans-serif;
+      }
+    }
+
   </style>
 </head>
 
@@ -2449,6 +2559,14 @@
     </div>
     <img class="viewer-image" id="viewer-image" alt="" hidden>
     <video class="viewer-video" id="viewer-video" muted playsinline webkit-playsinline preload="none" disablepictureinpicture hidden></video>
+    <div class="protection-watermark" aria-hidden="true">
+      <span>ELIANE FEN • CONTEÚDO PROTEGIDO</span>
+      <span>ELIANE FEN • CONTEÚDO PROTEGIDO</span>
+      <span>ELIANE FEN • CONTEÚDO PROTEGIDO</span>
+      <span>ELIANE FEN • CONTEÚDO PROTEGIDO</span>
+      <span>ELIANE FEN • CONTEÚDO PROTEGIDO</span>
+      <span>ELIANE FEN • CONTEÚDO PROTEGIDO</span>
+    </div>
     <p class="viewer-message" id="viewer-message" role="status">Carregando prévia…</p>
   </dialog>
 
@@ -2458,7 +2576,22 @@
         <img src="elianeperfil.jpg" alt="Foto ampliada de Eliane Fen" width="640" height="640" decoding="async">
       </div>
     </div>
+    <div class="protection-watermark" aria-hidden="true">
+      <span>ELIANE FEN • CONTEÚDO PROTEGIDO</span>
+      <span>ELIANE FEN • CONTEÚDO PROTEGIDO</span>
+      <span>ELIANE FEN • CONTEÚDO PROTEGIDO</span>
+      <span>ELIANE FEN • CONTEÚDO PROTEGIDO</span>
+      <span>ELIANE FEN • CONTEÚDO PROTEGIDO</span>
+      <span>ELIANE FEN • CONTEÚDO PROTEGIDO</span>
+    </div>
   </dialog>
+
+  <div class="privacy-shield" id="privacy-shield" aria-hidden="true">
+    <div class="privacy-shield-content">
+      <svg class="icon" aria-hidden="true"><use href="#fire"/></svg>
+      <strong>Conteúdo protegido</strong>
+    </div>
+  </div>
 
   <script>
     (function () {
@@ -2481,6 +2614,7 @@
       const mobileQuery = window.matchMedia('(max-width: 640px)');
       const profileAvatar = document.getElementById('profile-avatar');
       const profileViewer = document.getElementById('profile-viewer');
+      const privacyShield = document.getElementById('privacy-shield');
 
       let closeTimer = 0;
       let loadTimer = 0;
@@ -2541,6 +2675,35 @@
 
         if (image.complete && image.naturalWidth === 0) {
           hideMissingImage();
+        }
+      });
+
+      document.querySelectorAll('img, video').forEach(function (media) {
+        media.draggable = false;
+      });
+
+      document.addEventListener('contextmenu', function (event) {
+        if (event.target.closest('img, video, .preview, .avatar')) {
+          event.preventDefault();
+        }
+      });
+
+      document.addEventListener('dragstart', function (event) {
+        if (event.target.matches('img, video')) {
+          event.preventDefault();
+        }
+      });
+
+      document.addEventListener('keydown', function (event) {
+        const key = String(event.key || '').toLowerCase();
+        const protectedShortcut = (event.ctrlKey || event.metaKey) && (key === 's' || key === 'p');
+
+        if (protectedShortcut || event.key === 'PrintScreen') {
+          event.preventDefault();
+          showPrivacyShield();
+          closeViewer();
+          closeProfileViewer();
+          setTimeout(hidePrivacyShield, 1200);
         }
       });
 
@@ -2644,12 +2807,41 @@
         mobileQuery.addListener(updateMobileButton);
       }
 
+      function showPrivacyShield() {
+        privacyShield.classList.add('is-active');
+      }
+
+      function hidePrivacyShield() {
+        privacyShield.classList.remove('is-active');
+      }
+
       document.addEventListener('visibilitychange', function () {
         document.body.classList.toggle('page-hidden', document.hidden);
 
-        if (document.hidden && !viewerVideo.paused) {
-          viewerVideo.pause();
+        if (document.hidden) {
+          showPrivacyShield();
+
+          if (!viewerVideo.paused) {
+            viewerVideo.pause();
+          }
+
+          closeViewer();
+          closeProfileViewer();
+        } else {
+          setTimeout(hidePrivacyShield, 180);
         }
+      });
+
+      window.addEventListener('blur', function () {
+        if (viewer.hasAttribute('open') || profileViewer.hasAttribute('open')) {
+          showPrivacyShield();
+          closeViewer();
+          closeProfileViewer();
+        }
+      });
+
+      window.addEventListener('focus', function () {
+        setTimeout(hidePrivacyShield, 180);
       });
 
       function clearViewerTimers() {
