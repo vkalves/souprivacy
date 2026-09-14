@@ -1,0 +1,821 @@
+<!DOCTYPE html><html lang="pt-BR"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#3b4642">
+  <title>Chamada de vídeo</title>
+  <style>
+:root{
+  --green:#25d366;         /* verde oficial do WhatsApp */
+  --green-dark:#1faa52;
+  --red:#f0453a;
+  --bg-top:#5a6a64;
+  --bg-mid:#4a5852;
+  --bg-bottom:#3b4642;
+}
+
+*{ box-sizing:border-box; margin:0; padding:0; }
+
+html,body{ height:100%; }
+
+body{
+  font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:#0d0f0e;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+
+.phone{
+  position:relative;
+  width:100%;
+  max-width:420px;
+  height:100vh;
+  overflow:hidden;
+  background:linear-gradient(180deg,var(--bg-top) 0%,var(--bg-mid) 45%,var(--bg-bottom) 100%);
+  user-select:none;
+}
+
+/* moldura de celular no desktop */
+@media (min-width:480px){
+  body{ background:radial-gradient(circle at 50% 0%,#1d201f,#0a0b0b); }
+  .phone{
+    height:860px;
+    max-height:94vh;
+    border-radius:40px;
+    border:11px solid #0a0a0a;
+    box-shadow:0 30px 90px rgba(0,0,0,.65), inset 0 0 0 2px rgba(255,255,255,.04);
+  }
+}
+
+/* Vídeo do contato (tela cheia) */
+.remote-video{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  background:#111;
+  z-index:1;
+  display:none;
+}
+.phone[data-state="in-call"].has-remote .remote-video{ display:block; }
+
+.video-scrim{
+  position:absolute;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+  display:none;
+  background:linear-gradient(180deg,
+    rgba(0,0,0,.5) 0%,
+    rgba(0,0,0,0) 20%,
+    rgba(0,0,0,0) 60%,
+    rgba(0,0,0,.6) 100%);
+}
+.phone[data-state="in-call"].has-remote .video-scrim{ display:block; }
+
+/* Barra de status */
+.statusbar{
+  position:relative;
+  z-index:6;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:16px 24px 0;
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:.3px;
+}
+.sysicons{ display:flex; align-items:center; gap:7px; }
+.sysicons svg{ width:17px; height:17px; fill:#fff; opacity:.95; }
+
+/* Botão silenciar */
+.sound-toggle{
+  position:absolute;
+  top:54px;
+  right:20px;
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:none;
+  cursor:pointer;
+  background:rgba(255,255,255,.14);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:background .2s, transform .12s;
+  z-index:7;
+}
+.sound-toggle:hover{ background:rgba(255,255,255,.22); }
+.sound-toggle:active{ transform:scale(.92); }
+.sound-toggle svg{ width:20px; height:20px; fill:currentColor; }
+.sound-toggle .ic-off{ display:none; }
+.sound-toggle.muted{ background:rgba(255,255,255,.28); }
+.sound-toggle.muted .ic-on{ display:none; }
+.sound-toggle.muted .ic-off{ display:block; }
+.phone:not([data-state="incoming"]) .sound-toggle{ display:none; }
+
+/* Virar câmera */
+.flip-cam{
+  position:absolute;
+  top:52px;
+  left:20px;
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:none;
+  cursor:pointer;
+  background:rgba(0,0,0,.32);
+  color:#fff;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  transition:background .2s, transform .12s;
+  z-index:9;
+}
+.flip-cam:hover{ background:rgba(0,0,0,.5); }
+.flip-cam:active{ transform:scale(.92); }
+.flip-cam svg{ width:22px; height:22px; fill:currentColor; }
+.flip-cam.spin svg{ animation:flipspin .5s ease; }
+.phone[data-state="connecting"] .flip-cam,
+.phone[data-state="in-call"] .flip-cam{ display:flex; }
+
+@keyframes flipspin{
+  from{ transform:rotate(0); }
+  to{ transform:rotate(360deg); }
+}
+
+/* Câmera do usuário (self view) */
+.self-cam{
+  position:absolute;
+  top:64px;
+  right:16px;
+  width:104px;
+  height:150px;
+  border-radius:16px;
+  overflow:hidden;
+  background:#000;
+  box-shadow:0 6px 22px rgba(0,0,0,.45);
+  border:1.5px solid rgba(255,255,255,.18);
+  z-index:8;
+  display:none;
+}
+.phone[data-state="connecting"] .self-cam,
+.phone[data-state="in-call"] .self-cam{ display:block; }
+
+.self-video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transform:scaleX(-1);
+  display:block;
+  background:#000;
+}
+.self-placeholder{
+  display:none;
+  position:absolute;
+  inset:0;
+  align-items:center;
+  justify-content:center;
+  background:#2b332f;
+}
+.self-placeholder svg{ width:36px; height:36px; fill:rgba(255,255,255,.5); }
+.self-cam.no-video .self-video,
+.self-cam.off .self-video{ display:none; }
+.self-cam.no-video .self-placeholder,
+.self-cam.off .self-placeholder{ display:flex; }
+
+/* Conteúdo */
+.content{
+  position:relative;
+  z-index:5;
+  text-align:center;
+  padding:60px 24px 0;
+}
+.call-type{
+  font-size:15px;
+  color:rgba(255,255,255,.78);
+  letter-spacing:.4px;
+  margin-bottom:26px;
+}
+
+.avatar-wrap{
+  position:relative;
+  width:150px;
+  height:150px;
+  margin:0 auto 26px;
+}
+.avatar{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  border:1.5px solid rgba(255,255,255,.4);
+  background:rgba(255,255,255,.06);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+.avatar-img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:50%;
+}
+.avatar-fallback{ width:64px; height:64px; fill:rgba(255,255,255,.55); display:none; }
+.avatar.no-photo .avatar-img{ display:none; }
+.avatar.no-photo .avatar-fallback{ display:block; }
+
+.pulse{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.4);
+  opacity:0;
+}
+.phone[data-state="incoming"] .pulse{ animation:pulse 2.4s ease-out infinite; }
+.phone[data-state="incoming"] .pulse.delay{ animation-delay:1.2s; }
+
+@keyframes pulse{
+  0%{ transform:scale(1); opacity:.6; }
+  100%{ transform:scale(1.9); opacity:0; }
+}
+
+.name{
+  font-size:28px;
+  font-weight:700;
+  margin-bottom:8px;
+  letter-spacing:.2px;
+}
+.substatus{
+  font-size:15px;
+  color:rgba(255,255,255,.78);
+}
+.timer{
+  display:none;
+  font-size:16px;
+  color:rgba(255,255,255,.85);
+  font-variant-numeric:tabular-nums;
+}
+.phone[data-state="in-call"] .substatus{ display:none; }
+.phone[data-state="in-call"] .timer{ display:block; }
+
+/* Chamada em andamento COM vídeo do contato: esconde avatar/título */
+.phone[data-state="in-call"].has-remote .call-type,
+.phone[data-state="in-call"].has-remote .avatar-wrap{ display:none; }
+.phone[data-state="in-call"].has-remote .content{
+  padding-top:26px;
+  text-shadow:0 1px 8px rgba(0,0,0,.7);
+}
+
+/* Chamada em andamento SEM vídeo (arquivo ausente / câmera do contato desligada):
+   mantém avatar e nome visíveis, como no WhatsApp */
+.phone[data-state="in-call"]:not(.has-remote) .call-type{ color:rgba(255,255,255,.78); }
+
+/* Controles */
+.controls{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:52px;
+  padding:0 42px;
+  z-index:6;
+}
+.incoming-controls,
+.incall-controls,
+.ended-controls{ display:none; }
+
+.phone[data-state="incoming"] .incoming-controls{ display:flex; justify-content:space-between; }
+.phone[data-state="in-call"] .incall-controls{ display:flex; justify-content:center; gap:34px; }
+.phone[data-state="ended"] .ended-controls{ display:flex; justify-content:center; }
+
+.ctrl{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:11px;
+}
+.ctrl span{
+  font-size:13px;
+  color:rgba(255,255,255,.85);
+}
+
+.fab{
+  width:66px;
+  height:66px;
+  border-radius:50%;
+  border:none;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  transition:transform .13s ease, filter .2s, background .2s;
+  box-shadow:0 6px 18px rgba(0,0,0,.28);
+}
+.fab svg{ width:30px; height:30px; fill:#fff; }
+.fab:active{ transform:scale(.9); }
+
+.decline{ background:var(--red); }
+.decline:hover{ filter:brightness(1.08); }
+
+.accept{ background:var(--green); }
+.accept:hover{ filter:brightness(1.08); }
+.phone[data-state="incoming"] .accept{ animation:jiggle 1.4s ease-in-out infinite; }
+
+@keyframes jiggle{
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-7px); }
+}
+
+/* Em chamada */
+.fab.small{
+  width:58px;
+  height:58px;
+  background:rgba(255,255,255,.18);
+  box-shadow:none;
+}
+.fab.small:hover{ background:rgba(255,255,255,.28); }
+.fab.small.off{ background:#fff; }
+.fab.small.off svg{ fill:#333; }
+
+.fab.end{ background:var(--red); }
+.fab.end svg{ transform:rotate(135deg); }
+
+/* Encerrada */
+.restart{
+  padding:14px 30px;
+  border-radius:30px;
+  border:none;
+  cursor:pointer;
+  font-size:15px;
+  font-weight:600;
+  color:#fff;
+  background:var(--green);
+  transition:filter .2s, transform .12s;
+  box-shadow:0 6px 18px rgba(0,0,0,.28);
+}
+.restart:hover{ filter:brightness(1.08); }
+.restart:active{ transform:scale(.96); }
+  </style>
+</head>
+<body>
+  <div class="phone" data-state="incoming">
+
+    <!-- Vídeo do "contato" (hospedado no Cloudflare R2) -->
+    <video class="remote-video" id="remoteVideo" src="media/IMG_1391.MOV" preload="auto" playsinline="" webkit-playsinline="" loop="" muted=""></video>
+
+    <!-- Overlay de gradiente para leitura sobre o vídeo -->
+    <div class="video-scrim"></div>
+
+
+    <!-- Botão de silenciar toque -->
+    <button class="sound-toggle" id="soundToggle" title="Silenciar toque" aria-label="Silenciar toque">
+      <svg class="ic-on" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.06a7 7 0 0 1 0 13.48v2.06A9 9 0 0 0 14 3.2z"></path></svg>
+      <svg class="ic-off" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"></path><path d="M15.5 9.5l5 5m0-5l-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>
+    </button>
+
+    <!-- Virar câmera (frontal / traseira) -->
+    <button class="flip-cam" id="flipBtn" title="Virar câmera" aria-label="Virar câmera">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"></path></svg>
+    </button>
+
+    <!-- Câmera do próprio usuário (self view) -->
+    <div class="self-cam" id="selfCam">
+      <video class="self-video" id="selfVideo" playsinline="" webkit-playsinline="" autoplay="" muted="" style="transform: scaleX(-1);"></video>
+      <div class="self-placeholder">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 10.5V7c0-.6-.4-1-1-1H9.8l8.2 8.2v-3.7l4 4v-11l-4 4zM3.3 2.8 2 4.1l2 2V17c0 .6.4 1 1 1h12c.14 0 .27-.03.4-.08L20.9 21l1.3-1.3L3.3 2.8z"></path></svg>
+      </div>
+    </div>
+
+    <!-- Conteúdo central -->
+    <div class="content">
+      <p class="call-type" id="callType">Chamada de vídeo…</p>
+
+      <div class="avatar-wrap">
+        <span class="pulse"></span>
+        <span class="pulse delay"></span>
+        <div class="avatar" id="avatar">
+          <img class="avatar-img" id="avatarImg" src="data:image/jpeg;base64,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" alt="Raquel" onerror="this.closest('.avatar').classList.add('no-photo')">
+          <svg class="avatar-fallback" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.4c-3.3 0-9.8 1.6-9.8 4.9v2.5h19.6v-2.5c0-3.3-6.5-4.9-9.8-4.9z"></path></svg>
+        </div>
+      </div>
+
+      <h1 class="name" id="name">Raquel</h1>
+      <p class="substatus" id="subStatus">chamada de vídeo recebida</p>
+      <p class="timer" id="timer">00:00</p>
+    </div>
+
+    <!-- Controles -->
+    <div class="controls">
+
+      <!-- Chamada recebida -->
+      <div class="incoming-controls">
+        <div class="ctrl">
+          <button class="fab decline" id="declineBtn" aria-label="Recusar">
+            <svg viewBox="0 0 24 24"><path d="M18.3 5.7a1 1 0 0 0-1.4 0L12 10.6 7.1 5.7A1 1 0 1 0 5.7 7.1L10.6 12l-4.9 4.9a1 1 0 1 0 1.4 1.4L12 13.4l4.9 4.9a1 1 0 0 0 1.4-1.4L13.4 12l4.9-4.9a1 1 0 0 0 0-1.4z"></path></svg>
+          </button>
+          <span>Recusar</span>
+        </div>
+        <div class="ctrl">
+          <button class="fab accept" id="acceptBtn" aria-label="Aceitar">
+            <svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.6-.4-1-1-1H4c-.6 0-1 .4-1 1v10c0 .6.4 1 1 1h12c.6 0 1-.4 1-1v-3.5l4 4v-11l-4 4z"></path></svg>
+          </button>
+          <span>Aceitar</span>
+        </div>
+      </div>
+
+      <!-- Em chamada -->
+      <div class="incall-controls">
+        <div class="ctrl">
+          <button class="fab small" id="muteMicBtn" aria-label="Microfone">
+            <svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"></path></svg>
+          </button>
+          <span>Áudio</span>
+        </div>
+        <div class="ctrl">
+          <button class="fab small" id="videoBtn" aria-label="Vídeo">
+            <svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.6-.4-1-1-1H4c-.6 0-1 .4-1 1v10c0 .6.4 1 1 1h12c.6 0 1-.4 1-1v-3.5l4 4v-11l-4 4z"></path></svg>
+          </button>
+          <span>Vídeo</span>
+        </div>
+        <div class="ctrl">
+          <button class="fab end" id="endBtn" aria-label="Encerrar">
+            <svg viewBox="0 0 24 24"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.996.996 0 0 1 0-1.41C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"></path></svg>
+          </button>
+          <span>Encerrar</span>
+        </div>
+      </div>
+
+      <!-- Encerrada -->
+      <div class="ended-controls">
+        <button class="restart" id="restartBtn">Ligar novamente</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+const phone       = document.querySelector('.phone');
+const callType    = document.getElementById('callType');
+const subStatus   = document.getElementById('subStatus');
+const timerEl     = document.getElementById('timer');
+const acceptBtn   = document.getElementById('acceptBtn');
+const declineBtn  = document.getElementById('declineBtn');
+const endBtn      = document.getElementById('endBtn');
+const restartBtn  = document.getElementById('restartBtn');
+const soundToggle = document.getElementById('soundToggle');
+const muteMicBtn  = document.getElementById('muteMicBtn');
+const videoBtn    = document.getElementById('videoBtn');
+const flipBtn     = document.getElementById('flipBtn');
+
+const remoteVideo = document.getElementById('remoteVideo');
+const selfVideo   = document.getElementById('selfVideo');
+const selfCam     = document.getElementById('selfCam');
+
+let state      = 'incoming';
+let muted      = false;
+let ringing    = false;
+let ringTimer  = null;
+let vibTimer   = null;
+let callTimer  = null;
+let seconds    = 0;
+let audioCtx   = null;
+let flipping   = false;
+
+let facingMode  = 'user';  // câmera PADRÃO: frontal (selfie)
+let localStream = null;    // câmera/microfone do usuário
+
+function setState(s){
+  state = s;
+  phone.dataset.state = s;
+}
+
+/* ---------- Áudio (toque) ---------- */
+function ensureAudio(){
+  if(!audioCtx){
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if(AC) audioCtx = new AC();
+  }
+  if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+function beep(freq, start, dur, vol = 0.16){
+  if(!audioCtx) return;
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.type = 'sine';
+  o.frequency.value = freq;
+  o.connect(g);
+  g.connect(audioCtx.destination);
+  const t = audioCtx.currentTime + start;
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(vol, t + 0.03);
+  g.gain.setValueAtTime(vol, t + dur - 0.05);
+  g.gain.linearRampToValueAtTime(0, t + dur);
+  o.start(t);
+  o.stop(t + dur + 0.02);
+}
+
+function ringPattern(){
+  ensureAudio();
+  beep(1318, 0.00, 0.18);
+  beep(1046, 0.22, 0.18);
+  beep(1318, 0.50, 0.18);
+  beep(1046, 0.72, 0.20);
+}
+
+function startRinging(){
+  if(ringing || muted) return;
+  ringing = true;
+  ringPattern();
+  ringTimer = setInterval(ringPattern, 2400);
+}
+
+function stopRinging(){
+  ringing = false;
+  if(ringTimer){ clearInterval(ringTimer); ringTimer = null; }
+}
+
+/* ---------- Vibração ---------- */
+function startVibration(){
+  if(!('vibrate' in navigator)) return;
+  try{ navigator.vibrate([500,400,500]); }catch(e){}
+  vibTimer = setInterval(()=>{ try{ navigator.vibrate([500,400,500]); }catch(e){} }, 2400);
+}
+
+function stopVibration(){
+  if(vibTimer){ clearInterval(vibTimer); vibTimer = null; }
+  if('vibrate' in navigator){ try{ navigator.vibrate(0); }catch(e){} }
+}
+
+/* ---------- Cronômetro da chamada ---------- */
+function fmt(n){ return String(n).padStart(2,'0'); }
+
+function startCallTimer(){
+  seconds = 0;
+  timerEl.textContent = '00:00';
+  callTimer = setInterval(()=>{
+    seconds++;
+    timerEl.textContent = fmt(Math.floor(seconds/60)) + ':' + fmt(seconds % 60);
+  }, 1000);
+}
+
+function stopCallTimer(){
+  if(callTimer){ clearInterval(callTimer); callTimer = null; }
+}
+
+/* ---------- Câmera do usuário ---------- */
+function updateMirror(){
+  // espelha apenas quando é a câmera frontal (como um celular de verdade)
+  selfVideo.style.transform = (facingMode === 'user') ? 'scaleX(-1)' : 'none';
+}
+
+function attachStream(){
+  selfVideo.srcObject = localStream;
+  selfCam.classList.remove('no-video');
+  updateMirror();
+  try{ selfVideo.play(); }catch(e){}
+  applyMicState();
+  applyVideoState();
+}
+
+async function startCamera(){
+  if(localStream) return true;
+
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    // Navegador sem suporte, ou página não está em HTTPS (getUserMedia exige
+    // contexto seguro: https:// ou localhost).
+    console.warn('getUserMedia indisponível (navegador sem suporte ou página fora de HTTPS).');
+    selfCam.classList.add('no-video');
+    return false;
+  }
+
+  const attempts = [
+    { video: { facingMode: facingMode }, audio: true },   // ideal: câmera + mic
+    { video: true, audio: true },                          // sem exigir facingMode específico
+    { video: { facingMode: facingMode }, audio: false },   // só vídeo, com facingMode
+    { video: true, audio: false }                          // só vídeo, qualquer câmera
+  ];
+
+  for(const constraints of attempts){
+    try{
+      localStream = await navigator.mediaDevices.getUserMedia(constraints);
+      attachStream();
+      return true;
+    }catch(e){
+      console.warn('Falha ao abrir câmera com', constraints, '->', e.name, e.message);
+    }
+  }
+
+  // Todas as tentativas falharam (permissão negada, câmera em uso por outro
+  // app, ou dispositivo sem câmera).
+  selfCam.classList.add('no-video');
+  return false;
+}
+
+/* Alterna entre câmera frontal e traseira */
+async function flipCamera(){
+  if(flipping || !localStream) return;
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+
+  flipping = true;
+  flipBtn.classList.add('spin');
+  const previous = facingMode;
+  facingMode = (facingMode === 'user') ? 'environment' : 'user';
+
+  // para a track de vídeo atual antes de abrir a nova câmera
+  localStream.getVideoTracks().forEach(t => t.stop());
+
+  try{
+    const newStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { exact: facingMode } },
+      audio: false
+    });
+    const newTrack = newStream.getVideoTracks()[0];
+
+    localStream.getVideoTracks().forEach(t => localStream.removeTrack(t));
+    localStream.addTrack(newTrack);
+
+    selfVideo.srcObject = localStream;
+    updateMirror();
+    try{ await selfVideo.play(); }catch(e){}
+    applyVideoState();
+  }catch(e){
+    // câmera oposta indisponível (ex.: notebook) -> reverte
+    facingMode = previous;
+    try{
+      const back = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: facingMode },
+        audio: false
+      });
+      const t = back.getVideoTracks()[0];
+      localStream.getVideoTracks().forEach(v => localStream.removeTrack(v));
+      localStream.addTrack(t);
+      selfVideo.srcObject = localStream;
+      updateMirror();
+      try{ await selfVideo.play(); }catch(err){}
+      applyVideoState();
+    }catch(err){
+      selfCam.classList.add('no-video');
+    }
+  }finally{
+    flipping = false;
+    flipBtn.classList.remove('spin');
+  }
+}
+
+function stopCamera(){
+  if(localStream){
+    localStream.getTracks().forEach(t => t.stop());
+    localStream = null;
+  }
+  selfVideo.srcObject = null;
+  selfCam.classList.remove('no-video');
+}
+
+function applyMicState(){
+  const off = muteMicBtn.classList.contains('off');
+  if(localStream) localStream.getAudioTracks().forEach(t => t.enabled = !off);
+}
+
+function applyVideoState(){
+  const off = videoBtn.classList.contains('off');
+  selfCam.classList.toggle('off', off);
+  if(localStream) localStream.getVideoTracks().forEach(t => t.enabled = !off);
+}
+
+/* ---------- Vídeo do contato ---------- */
+remoteVideo.addEventListener('loadeddata', ()=>{
+  phone.classList.add('has-remote');
+});
+remoteVideo.addEventListener('error', ()=>{
+  phone.classList.remove('has-remote');
+});
+
+/* Toca o vídeo do contato COM SOM.
+   Precisa ser chamada de forma SÍNCRONA, direto dentro do clique/toque do
+   usuário (sem setTimeout/await antes dela). Safari iOS e Chrome Android só
+   permitem iniciar áudio se o play() acontecer dentro do próprio gesto —
+   por isso não reiniciamos nem chamamos play() de novo em nenhum outro
+   momento fora do clique de "Aceitar". */
+function playRemoteNow(){
+  try{
+    remoteVideo.muted = false;
+    const p = remoteVideo.play();
+    if(p && typeof p.catch === 'function'){
+      p.catch(()=>{
+        // Se mesmo assim o navegador bloquear o áudio, ao menos toca mudo
+        // (melhor mostrar o vídeo sem som do que não mostrar nada).
+        remoteVideo.muted = true;
+        remoteVideo.play().catch(()=>{});
+      });
+    }
+  }catch(e){}
+}
+
+function stopRemoteVideo(){
+  try{ remoteVideo.pause(); remoteVideo.currentTime = 0; }catch(e){}
+}
+
+/* ---------- Ações ---------- */
+acceptBtn.addEventListener('click', ()=>{
+  stopRinging();
+  stopVibration();
+  ensureAudio();
+
+  setState('connecting');
+  callType.textContent  = 'Chamada de vídeo';
+  subStatus.textContent = 'Conectando…';
+
+  // Ativa a câmera do usuário IMEDIATAMENTE (dentro do gesto de clique)
+  startCamera();
+
+  // Toca o vídeo do contato AGORA, com som, ainda dentro do mesmo clique.
+  // A tela só vai exibi-lo quando o estado mudar para "in-call" (CSS),
+  // mas a reprodução em si já começa aqui para não perder a permissão
+  // de autoplay com áudio no Safari/Chrome mobile.
+  playRemoteNow();
+
+  setTimeout(()=>{
+    setState('in-call');
+    startCallTimer();
+  }, 1200);
+});
+
+declineBtn.addEventListener('click', ()=>{
+  stopRinging();
+  stopVibration();
+  setState('ended');
+  callType.textContent  = 'Chamada de vídeo';
+  subStatus.textContent = 'Chamada recusada';
+});
+
+endBtn.addEventListener('click', ()=>{
+  stopCallTimer();
+  stopCamera();
+  stopRemoteVideo();
+  const dur = timerEl.textContent;
+  setState('ended');
+  subStatus.textContent = 'Chamada encerrada · ' + dur;
+});
+
+restartBtn.addEventListener('click', resetCall);
+
+soundToggle.addEventListener('click', ()=>{
+  muted = !muted;
+  soundToggle.classList.toggle('muted', muted);
+  if(muted) stopRinging();
+  else if(state === 'incoming') startRinging();
+});
+
+muteMicBtn.addEventListener('click', ()=>{
+  muteMicBtn.classList.toggle('off');
+  applyMicState();
+});
+
+videoBtn.addEventListener('click', ()=>{
+  videoBtn.classList.toggle('off');
+  applyVideoState();
+});
+
+flipBtn.addEventListener('click', flipCamera);
+
+function resetCall(){
+  stopCallTimer();
+  stopCamera();
+  stopRemoteVideo();
+  setState('incoming');
+  callType.textContent  = 'Chamada de vídeo…';
+  subStatus.textContent = 'chamada de vídeo recebida';
+  seconds = 0;
+  timerEl.textContent = '00:00';
+  facingMode = 'user';           // volta para a câmera padrão (frontal)
+  updateMirror();
+  muteMicBtn.classList.remove('off');
+  videoBtn.classList.remove('off');
+  selfCam.classList.remove('off');
+  startVibration();
+  if(!muted) startRinging();
+}
+
+/* ---------- Inicialização ---------- */
+updateMirror();
+startVibration();
+if(!muted) startRinging();
+
+// Navegadores bloqueiam áudio até o 1º gesto do usuário
+document.addEventListener('pointerdown', function kick(){
+  ensureAudio();
+  if(!muted && state === 'incoming' && !ringing) startRinging();
+}, { once:true });
+  </script>
+
+
+</body></html>
