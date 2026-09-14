@@ -880,7 +880,7 @@
     // CONTROLE DAS PRÉVIAS:
     // cada prévia pode ser visualizada apenas uma vez neste navegador/dispositivo.
     // O estado é salvo em localStorage e permanece após atualizar ou reabrir a página.
-    const PREVIEW_STORAGE_KEY = 'elianeFenViewedPreviewsV2';
+    const PREVIEW_STORAGE_KEY = 'elianeFenViewedPreviewsV3';
 
     function loadViewedPreviews() {
       try {
@@ -929,6 +929,28 @@
       img.addEventListener('error', hideMissing);
       if (img.complete && img.naturalWidth === 0) hideMissing();
     });
+
+    document.querySelectorAll('.preview video').forEach(video => {
+      // Alguns navegadores não desenham o primeiro frame com preload=metadata.
+      // Ao carregar os metadados, avançamos alguns milissegundos para gerar
+      // uma miniatura real do próprio vídeo.
+      const renderFirstFrame = () => {
+        try {
+          if (Number.isFinite(video.duration) && video.duration > 0) {
+            video.currentTime = Math.min(0.08, Math.max(0, video.duration / 20));
+          }
+        } catch {}
+      };
+
+      video.addEventListener('loadedmetadata', renderFirstFrame, { once: true });
+      video.addEventListener('loadeddata', () => {
+        video.style.visibility = 'visible';
+      }, { once: true });
+
+      video.addEventListener('error', () => {
+        // Mantém o card visível e deixa o fallback de fundo aparecer.
+        video.style.visibility = 'hidden';
+      });
 
       video.load();
     });
