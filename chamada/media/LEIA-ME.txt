@@ -1,0 +1,14 @@
+ARQUIVOS DA CHAMADA SIMULADA
+
+Coloque os dois vídeos nesta pasta com estes nomes exatos:
+
+1. chamada1.mp4  -> primeira parte da chamada
+2. chamada2.mp4  -> segunda parte da chamada, iniciada após a pausa de 10 segundos
+
+Formato recomendado:
+- MP4
+- Vídeo H.264
+- Áudio AAC
+- Fast Start / Web Optimized ativado, se o conversor oferecer essa opção
+
+O HTML também aceita media/chamada.mp4 e media/IMG_1391.MOV como alternativas apenas para a PRIMEIRA parte, para manter compatibilidade com versões anteriores.
