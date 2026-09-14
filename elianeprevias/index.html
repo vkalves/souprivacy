@@ -1968,28 +1968,15 @@
     }
 
 
-    /* Animação do status online fornecida pelo usuário */
+    /* Animação aplicada somente ao ponto verde */
     .online-status {
-      --online-glow: 40, 167, 69;
-      transform-origin: center;
-      will-change: opacity;
-      animation: online-status-pulse 2.6s ease-in-out infinite;
+      animation: none !important;
+      opacity: 1;
+      transform: none;
     }
 
     .online-status .online-dot {
       animation: pulse-green 1.6s ease-out infinite;
-    }
-
-    @keyframes online-status-pulse {
-      0%,
-      100% {
-        opacity: 1;
-        box-shadow: 0 2px 6px rgba(var(--online-glow), .12);
-      }
-      50% {
-        opacity: .82;
-        box-shadow: 0 2px 6px rgba(var(--online-glow), .12);
-      }
     }
 
     @keyframes pulse-green {
@@ -2020,22 +2007,8 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .online-status {
-        animation: online-status-glow 2.4s ease-in-out infinite !important;
-      }
-
       .online-status .online-dot {
         animation: pulse-green 1.6s ease-out infinite !important;
-      }
-    }
-
-    @keyframes online-status-glow {
-      0%,
-      100% {
-        box-shadow: 0 2px 7px rgba(var(--online-glow), .14);
-      }
-      50% {
-        box-shadow: 0 4px 15px rgba(var(--online-glow), .36);
       }
     }
 
