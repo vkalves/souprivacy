@@ -843,8 +843,8 @@
           <button class="preview" type="button" aria-label="Ver prévia 2"><img src="previa2.jpg" alt="Prévia 2" width="400" height="500" decoding="async"><span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Conteúdos exclusivos</span></span><span class="number" aria-hidden="true">02</span></button>
           <button class="preview" type="button" aria-label="Ver prévia 3"><img src="previa3.jpg" alt="Prévia 3" width="400" height="500" decoding="async"><span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Conteúdos exclusivos</span></span><span class="number" aria-hidden="true">03</span></button>
           <button class="preview" type="button" aria-label="Ver prévia 4"><img src="previa4.jpg" alt="Prévia 4" width="400" height="500" decoding="async"><span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Conteúdos exclusivos</span></span><span class="number" aria-hidden="true">04</span></button>
-          <button class="preview" type="button" aria-label="Ver prévia em vídeo 5"><video src="previa5.mp4" muted playsinline preload="metadata" aria-hidden="true"></video><span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Conteúdos exclusivos</span></span><span class="number" aria-hidden="true">05</span></button>
-          <button class="preview" type="button" aria-label="Ver prévia em vídeo 6"><video src="previa6.mp4" muted playsinline preload="metadata" aria-hidden="true"></video><span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Conteúdos exclusivos</span></span><span class="number" aria-hidden="true">06</span></button>
+          <button class="preview" type="button" aria-label="Ver prévia em vídeo 5"><video src="previa5.mp4" muted playsinline webkit-playsinline preload="auto" aria-hidden="true"></video><span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Conteúdos exclusivos</span></span><span class="number" aria-hidden="true">05</span></button>
+          <button class="preview" type="button" aria-label="Ver prévia em vídeo 6"><video src="previa6.mp4" muted playsinline webkit-playsinline preload="auto" aria-hidden="true"></video><span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Conteúdos exclusivos</span></span><span class="number" aria-hidden="true">06</span></button>
         </div>
       </section>
       <section class="access" aria-label="Acesso ao conteúdo completo">
@@ -866,7 +866,7 @@
   <dialog class="viewer" id="preview-viewer" aria-labelledby="viewer-title" aria-describedby="viewer-message">
     <div class="viewer-head"><strong id="viewer-title">Sua prévia</strong><button class="close-viewer" type="button" aria-label="Fechar prévia">×</button></div>
     <img class="viewer-image" id="viewer-image" alt="">
-    <video class="viewer-video" id="viewer-video" muted playsinline preload="metadata" hidden></video>
+    <video class="viewer-video" id="viewer-video" muted playsinline webkit-playsinline preload="auto" hidden></video>
     <p class="viewer-message" id="viewer-message" role="status">Carregando prévia…</p>
   </dialog>
   <script>
@@ -879,7 +879,7 @@
     // CONTROLE DAS PRÉVIAS:
     // cada prévia pode ser visualizada apenas uma vez neste navegador/dispositivo.
     // O estado é salvo em localStorage e permanece após atualizar ou reabrir a página.
-    const PREVIEW_STORAGE_KEY = 'elianeFenViewedPreviewsV1';
+    const PREVIEW_STORAGE_KEY = 'elianeFenViewedPreviewsV2';
 
     function loadViewedPreviews() {
       try {
@@ -930,7 +930,28 @@
     });
 
     document.querySelectorAll('.preview video').forEach(video => {
-      video.addEventListener('error', () => { video.style.visibility = 'hidden'; });
+      // Alguns navegadores não desenham o primeiro frame com preload=metadata.
+      // Ao carregar os metadados, avançamos alguns milissegundos para gerar
+      // uma miniatura real do próprio vídeo.
+      const renderFirstFrame = () => {
+        try {
+          if (Number.isFinite(video.duration) && video.duration > 0) {
+            video.currentTime = Math.min(0.08, Math.max(0, video.duration / 20));
+          }
+        } catch {}
+      };
+
+      video.addEventListener('loadedmetadata', renderFirstFrame, { once: true });
+      video.addEventListener('loadeddata', () => {
+        video.style.visibility = 'visible';
+      }, { once: true });
+
+      video.addEventListener('error', () => {
+        // Mantém o card visível e deixa o fallback de fundo aparecer.
+        video.style.visibility = 'hidden';
+      });
+
+      video.load();
     });
     const mainAccess = document.getElementById('main-access');
     const mobileAccess = document.getElementById('mobile-access');
@@ -1013,7 +1034,7 @@
       viewerImage.hidden = false;
       viewerImage.style.visibility = 'hidden';
 
-      viewerVideo.onloadeddata = viewerVideo.onerror = viewerVideo.onended = null;
+      viewerVideo.oncanplay = viewerVideo.onerror = viewerVideo.onended = null;
       viewerVideo.pause();
       viewerVideo.removeAttribute('src');
       viewerVideo.load();
@@ -1077,12 +1098,13 @@
 
           const failVideo = () => {
             clearTimeout(loadTimer);
-            viewerVideo.onloadeddata = viewerVideo.onerror = null;
-            message.textContent = 'Esta prévia está indisponível no momento.';
+            viewerVideo.oncanplay = viewerVideo.onerror = null;
+            message.textContent = 'Não foi possível carregar este vídeo. Use MP4 em H.264 para maior compatibilidade.';
             closeTimer = setTimeout(closeViewer, TEMPO_PREVIA_VIDEO);
           };
 
-          viewerVideo.onloadeddata = () => {
+          viewerVideo.oncanplay = () => {
+            viewerVideo.oncanplay = null;
             clearTimeout(loadTimer);
             message.textContent = 'Aproveite a prévia ✨';
 
