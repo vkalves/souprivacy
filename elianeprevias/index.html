@@ -1841,6 +1841,26 @@
       }
     }
 
+
+    /* Contador alinhado entre o perfil e as prévias */
+    h1 {
+      flex-wrap: nowrap;
+    }
+
+    .gallery-subscribers {
+      margin-left: auto;
+    }
+
+    @media (max-width: 640px) {
+      h1 {
+        flex-wrap: nowrap;
+      }
+
+      .gallery-subscribers {
+        flex: 0 0 auto;
+      }
+    }
+
   </style>
 </head>
 
@@ -1921,10 +1941,6 @@
               Eliane Fen
               <svg class="verified-badge" role="img" aria-label="Perfil verificado"><use href="#verified"/></svg>
             </span>
-            <span class="subscriber-count" aria-label="578 assinantes">
-              <svg class="icon subscriber-icon" aria-hidden="true"><use href="#users"/></svg>
-              <span>578 assinantes</span>
-            </span>
           </h1>
           <p class="bio">Veja algumas prévias do meu conteúdo e fale comigo diretamente pelo Telegram. 🔥</p>
         </div>
@@ -1937,9 +1953,9 @@
               <svg class="icon" aria-hidden="true"><use href="#photo"/></svg>
               6 prévias
             </h2>
-            <span class="gallery-note">
-              <svg class="icon" aria-hidden="true"><use href="#fire"/></svg>
-              Toque para abrir
+            <span class="subscriber-count gallery-subscribers" aria-label="578 assinantes">
+              <svg class="icon subscriber-icon" aria-hidden="true"><use href="#users"/></svg>
+              <span>578 assinantes</span>
             </span>
           </div>
 
