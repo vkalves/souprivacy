@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#ffffff">
   <meta name="description" content="Confira minhas prévias e acesse o conteúdo completo. Novas publicações em um espaço exclusivo.">
   <link rel="preload" as="image" href="capa.jpg" fetchpriority="high">
-  <title>Confira minhas prévias · Eliane Fen</title>
+  <title>Eliane Fen · Prévias exclusivas</title>
 
   <style>
     :root {
@@ -862,6 +862,427 @@
         scroll-behavior: auto !important;
       }
     }
+
+    /* Refinamento visual: mantém a estrutura e o comportamento originais */
+    :root {
+      --ink: #221b17;
+      --muted: #746a63;
+      --orange: #f36b16;
+      --orange-deep: #d95608;
+      --orange-soft: #fff4ec;
+      --line: #eee6e0;
+      --surface: #ffffff;
+      --surface-soft: #fcfaf8;
+      --preview-blur: 11px;
+      --profile-gradient: linear-gradient(120deg, #f45f12 0%, #ff8124 58%, #ffad45 100%);
+    }
+
+    body {
+      padding: 30px 0;
+      background:
+        radial-gradient(circle at 12% 5%, rgba(255, 134, 49, .12), transparent 31%),
+        radial-gradient(circle at 90% 92%, rgba(244, 95, 18, .08), transparent 27%),
+        #f5f2ef;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .site-shell {
+      width: min(880px, calc(100% - 40px));
+      border: 1px solid rgba(80, 49, 31, .08);
+      border-radius: 26px;
+      background: var(--surface);
+      box-shadow: 0 22px 65px rgba(63, 42, 29, .11);
+    }
+
+    .container {
+      padding: 0 28px 28px;
+    }
+
+    .page-heading {
+      min-height: 72px;
+      color: #332923;
+      font-size: 16px;
+      font-weight: 650;
+      letter-spacing: -.015em;
+    }
+
+    .back {
+      width: 40px;
+      height: 40px;
+      border-color: var(--line);
+      background: var(--surface-soft);
+      color: #4b4039;
+    }
+
+    .heading-accent {
+      width: 36px;
+      height: 36px;
+      background: var(--orange-soft);
+      color: var(--orange);
+    }
+
+    .cover {
+      position: relative;
+      height: 198px;
+      border-radius: 20px;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12);
+    }
+
+    .cover::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(180deg, transparent 56%, rgba(34, 19, 10, .16));
+      pointer-events: none;
+    }
+
+    .topbar {
+      min-height: 67px;
+      padding: 0 22px;
+    }
+
+    .identity {
+      margin-top: -57px;
+    }
+
+    .avatar {
+      width: 122px;
+      height: 122px;
+      border-width: 5px;
+      box-shadow: 0 9px 26px rgba(57, 29, 12, .16);
+    }
+
+    .avatar::after {
+      width: 16px;
+      height: 16px;
+      border-width: 3px;
+    }
+
+    .online-status {
+      gap: 8px;
+      margin-top: 14px;
+      padding: 8px 14px;
+      border-width: 1px;
+      border-color: #b9e8c8;
+      background: #f3fbf5;
+      color: #247e41;
+      font-size: 12px;
+      font-weight: 650;
+      box-shadow: 0 4px 14px rgba(40, 167, 69, .08);
+    }
+
+    .online-dot {
+      width: 8px;
+      height: 8px;
+      flex-basis: 8px;
+    }
+
+    .intro {
+      padding: 9px 22px 24px;
+    }
+
+    h1 {
+      font-size: clamp(27px, 4vw, 32px);
+      font-weight: 720;
+      letter-spacing: -.035em;
+    }
+
+    .handle {
+      margin: 7px 0 14px;
+      padding: 4px 9px;
+      background: var(--orange-soft);
+      color: #ae4a0a;
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: .015em;
+    }
+
+    .bio {
+      max-width: 610px;
+      color: #625750;
+      font-size: 15px;
+      line-height: 1.58;
+    }
+
+    .gallery-card {
+      border-top: 1px solid var(--line);
+      padding-top: 8px;
+    }
+
+    .gallery-heading {
+      min-height: 56px;
+      padding: 0 4px;
+    }
+
+    h2 {
+      font-size: 17px;
+      font-weight: 680;
+    }
+
+    h2 .icon {
+      width: 31px;
+      height: 31px;
+      border-radius: 9px;
+      background: var(--orange-soft);
+    }
+
+    .gallery-note {
+      padding: 6px 10px;
+      background: #fff8f3;
+      color: #ac4c0e;
+      font-size: 11px;
+      font-weight: 620;
+    }
+
+    .gallery {
+      gap: 10px;
+      padding: 7px 0 18px;
+    }
+
+    .preview {
+      aspect-ratio: 4 / 5;
+      border-radius: 16px;
+      background: #eee8e3;
+      box-shadow: 0 5px 16px rgba(55, 31, 17, .07);
+      transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
+    }
+
+    .preview img {
+      filter: blur(var(--preview-blur)) saturate(.9);
+      transform: scale(1.14);
+    }
+
+    .preview::after {
+      background: linear-gradient(to bottom, rgba(30, 16, 8, .04) 22%, rgba(28, 14, 7, .48) 100%);
+    }
+
+    .locked {
+      gap: 8px;
+    }
+
+    .lock-circle {
+      width: 48px;
+      height: 48px;
+      border-color: rgba(255, 255, 255, .5);
+      background: rgba(255, 255, 255, .17);
+      box-shadow: 0 7px 21px rgba(0, 0, 0, .16);
+      backdrop-filter: blur(5px);
+    }
+
+    .lock-circle .icon {
+      width: 21px;
+      height: 21px;
+    }
+
+    .locked-label {
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: .01em;
+    }
+
+    .number {
+      right: 11px;
+      bottom: 10px;
+      left: auto;
+      padding: 3px 7px;
+      border-color: rgba(255, 255, 255, .3);
+      background: rgba(19, 10, 5, .22);
+      font-size: 9px;
+      backdrop-filter: blur(5px);
+    }
+
+    .access {
+      margin-top: 10px;
+      padding: 27px 24px 25px;
+      border: 1px solid #f1e5dc;
+      border-radius: 20px;
+      background: linear-gradient(145deg, #fffaf6, #fff5ed);
+    }
+
+    .notice {
+      margin-bottom: 14px;
+      color: #665a52;
+      font-size: 13px;
+    }
+
+    .cta {
+      min-height: 55px;
+      border: 1px solid rgba(255, 255, 255, .25);
+      font-size: 14px;
+      font-weight: 720;
+      letter-spacing: .035em;
+      box-shadow: 0 10px 24px rgba(221, 88, 8, .24);
+    }
+
+    .trust {
+      gap: 8px 10px;
+      margin-top: 18px;
+    }
+
+    .trust li {
+      gap: 6px;
+      padding: 6px 9px;
+      border: 1px solid rgba(224, 112, 43, .12);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .7);
+      color: #76685f;
+      font-size: 10px;
+      font-weight: 550;
+    }
+
+    footer {
+      padding-top: 20px;
+      color: #a3978f;
+      font-size: 11px;
+    }
+
+    .viewer {
+      border: 1px solid rgba(255, 255, 255, .15);
+      border-radius: 22px;
+      box-shadow: 0 25px 90px rgba(0, 0, 0, .42);
+    }
+
+    .viewer::backdrop {
+      background: rgba(23, 17, 13, .82);
+      backdrop-filter: blur(6px);
+    }
+
+    .profile-card,
+    .gallery-card,
+    .access {
+      animation: section-enter .55s both;
+    }
+
+    .gallery-card {
+      animation-delay: .08s;
+    }
+
+    .access {
+      animation-delay: .14s;
+    }
+
+    @keyframes section-enter {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (hover: hover) {
+      .preview:not(:disabled):hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 25px rgba(62, 31, 13, .13);
+      }
+
+      .cta:hover {
+        filter: brightness(1.035) saturate(1.03);
+        transform: translateY(-1px);
+        box-shadow: 0 13px 29px rgba(221, 88, 8, .29);
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 6px 0;
+        background: #f6f2ef;
+      }
+
+      .site-shell {
+        width: calc(100% - 12px);
+        border-radius: 20px;
+        box-shadow: 0 10px 34px rgba(63, 42, 29, .09);
+      }
+
+      .container {
+        padding: 0 10px 20px;
+      }
+
+      .page-heading {
+        min-height: 60px;
+      }
+
+      .cover {
+        height: 145px;
+        border-radius: 16px;
+      }
+
+      .topbar {
+        min-height: 60px;
+        padding: 0 13px;
+      }
+
+      .identity {
+        margin-top: -43px;
+      }
+
+      .avatar {
+        width: 94px;
+        height: 94px;
+      }
+
+      .online-status {
+        margin-top: 12px;
+        padding: 7px 10px;
+      }
+
+      .intro {
+        padding: 7px 13px 19px;
+      }
+
+      h1 {
+        font-size: 25px;
+      }
+
+      .bio {
+        font-size: 14px;
+      }
+
+      .gallery-heading {
+        padding: 0 3px;
+      }
+
+      .gallery {
+        gap: 7px;
+      }
+
+      .preview {
+        border-radius: 13px;
+      }
+
+      .access {
+        margin-top: 7px;
+        padding: 23px 13px 21px;
+        border-radius: 17px;
+      }
+
+      .mobile-access {
+        right: 8px;
+        bottom: max(7px, env(safe-area-inset-bottom));
+        left: 8px;
+        padding: 6px;
+        border-color: rgba(238, 230, 224, .9);
+        box-shadow: 0 9px 28px rgba(68, 35, 17, .16);
+      }
+
+      .mobile-access .cta {
+        min-height: 50px;
+      }
+
+      .trust {
+        gap: 7px;
+      }
+
+      .trust li {
+        padding: 5px 8px;
+      }
+    }
+
   </style>
 </head>
 
@@ -901,7 +1322,7 @@
   <div class="site-shell">
     <div class="container">
       <div class="page-heading">
-        <a class="back" href="https://t.me/elianefenn" data-access aria-label="Voltar por Telegram">
+        <a class="back" href="https://t.me/elianefenn" data-access aria-label="Conversar no Telegram">
           <svg class="icon" aria-hidden="true"><use href="#arrow"/></svg>
         </a>
         <span class="verified-name">
@@ -935,8 +1356,8 @@
             Eliane Fen
             <svg class="verified-badge" role="img" aria-label="Perfil verificado"><use href="#verified"/></svg>
           </h1>
-          <p class="handle">Meu espaço secreto</p>
-          <p class="bio">Um cantinho com algumas prévias para você conhecer meu conteúdo. 🔥</p>
+          <p class="handle">Conteúdo exclusivo</p>
+          <p class="bio">Veja algumas prévias do meu conteúdo e fale comigo diretamente pelo Telegram. 🔥</p>
         </div>
       </header>
 
@@ -949,60 +1370,60 @@
             </h2>
             <span class="gallery-note">
               <svg class="icon" aria-hidden="true"><use href="#fire"/></svg>
-              Conteúdos exclusivos
+              Toque para abrir
             </span>
           </div>
 
           <div class="gallery">
             <button class="preview" type="button" data-preview-id="1" aria-label="Ver prévia 1">
               <img src="previa1.jpg" alt="Prévia 1" width="400" height="500" loading="lazy" decoding="async">
-              <span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Conteúdos exclusivos</span></span>
+              <span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Toque para visualizar</span></span>
               <span class="number" aria-hidden="true">01</span>
             </button>
 
             <button class="preview" type="button" data-preview-id="2" aria-label="Ver prévia 2">
               <img src="previa2.jpg" alt="Prévia 2" width="400" height="500" loading="lazy" decoding="async">
-              <span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Conteúdos exclusivos</span></span>
+              <span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Toque para visualizar</span></span>
               <span class="number" aria-hidden="true">02</span>
             </button>
 
             <button class="preview" type="button" data-preview-id="3" aria-label="Ver prévia 3">
               <img src="previa3.jpg" alt="Prévia 3" width="400" height="500" loading="lazy" decoding="async">
-              <span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Conteúdos exclusivos</span></span>
+              <span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Toque para visualizar</span></span>
               <span class="number" aria-hidden="true">03</span>
             </button>
 
             <button class="preview" type="button" data-preview-id="4" aria-label="Ver prévia 4">
               <img src="previa4.jpg" alt="Prévia 4" width="400" height="500" loading="lazy" decoding="async">
-              <span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Conteúdos exclusivos</span></span>
+              <span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Toque para visualizar</span></span>
               <span class="number" aria-hidden="true">04</span>
             </button>
 
             <button class="preview" type="button" data-preview-id="5" data-video="previa5.mp4?v=20260914-h264" aria-label="Ver prévia em vídeo 5">
               <img src="previa5-poster.jpg" alt="Prévia em vídeo 5" width="400" height="500" loading="lazy" decoding="async">
-              <span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Conteúdos exclusivos</span></span>
+              <span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Toque para visualizar</span></span>
               <span class="number" aria-hidden="true">05</span>
             </button>
 
             <button class="preview" type="button" data-preview-id="6" data-video="previa6.mp4?v=20260914-h264" aria-label="Ver prévia em vídeo 6">
               <img src="previa6-poster.jpg" alt="Prévia em vídeo 6" width="400" height="500" loading="lazy" decoding="async">
-              <span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Conteúdos exclusivos</span></span>
+              <span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Toque para visualizar</span></span>
               <span class="number" aria-hidden="true">06</span>
             </button>
           </div>
         </section>
 
         <section class="access" aria-label="Acesso ao conteúdo completo">
-          <p class="notice">Gostou das prévias? Volte por Telegram para a gente conversar.</p>
+          <p class="notice">Gostou das prévias? Fale comigo diretamente pelo Telegram.</p>
           <a class="cta telegram-animated" id="main-access" href="https://t.me/elianefenn" data-access>
             <svg class="icon" aria-hidden="true"><use href="#telegram"/></svg>
-            VOLTAR POR TELEGRAM
+            CONVERSAR NO TELEGRAM
           </a>
 
           <ul class="trust">
-            <li><svg class="icon" aria-hidden="true"><use href="#diamond"/></svg>Pacote Premium</li>
-            <li><svg class="icon" aria-hidden="true"><use href="#heart"/></svg>Pacote Avançado</li>
-            <li><svg class="icon" aria-hidden="true"><use href="#fire"/></svg>Pacote inicial</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#person"/></svg>Atendimento pessoal</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#heart"/></svg>Conteúdo exclusivo</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#telegram"/></svg>Acesso pelo Telegram</li>
           </ul>
         </section>
 
@@ -1016,7 +1437,7 @@
   <div class="mobile-access" id="mobile-access" hidden>
     <a class="cta telegram-animated" href="https://t.me/elianefenn" data-access>
       <svg class="icon" aria-hidden="true"><use href="#telegram"/></svg>
-      VOLTAR POR TELEGRAM
+      CONVERSAR NO TELEGRAM
     </a>
   </div>
 
