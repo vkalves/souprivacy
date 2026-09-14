@@ -1766,6 +1766,81 @@
       }
     }
 
+
+    /* Contador de assinantes ao lado do nome */
+    h1 {
+      flex-wrap: wrap;
+      column-gap: 10px;
+      row-gap: 7px;
+    }
+
+    .profile-name {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .subscriber-count {
+      display: inline-flex;
+      min-height: 29px;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border: 1px solid rgba(240, 105, 22, .2);
+      border-radius: 999px;
+      background: #fff6ef;
+      color: #b54d0d;
+      font-size: 11px;
+      font-weight: 680;
+      line-height: 1;
+      letter-spacing: 0;
+      white-space: nowrap;
+      box-shadow: 0 3px 10px rgba(218, 88, 10, .08);
+      animation: subscriber-soft-pulse 2.8s ease-in-out infinite;
+    }
+
+    .subscriber-count .subscriber-icon {
+      width: 14px;
+      height: 14px;
+      stroke-width: 1.9;
+    }
+
+    @keyframes subscriber-soft-pulse {
+      0%,
+      100% {
+        transform: translateY(0);
+        box-shadow: 0 3px 10px rgba(218, 88, 10, .08);
+      }
+      50% {
+        transform: translateY(-1px);
+        box-shadow: 0 5px 15px rgba(218, 88, 10, .16);
+      }
+    }
+
+    @media (max-width: 640px) {
+      h1 {
+        column-gap: 8px;
+        row-gap: 6px;
+      }
+
+      .profile-name {
+        gap: 7px;
+      }
+
+      .subscriber-count {
+        min-height: 26px;
+        gap: 5px;
+        padding: 5px 8px;
+        font-size: 10px;
+      }
+
+      .subscriber-count .subscriber-icon {
+        width: 13px;
+        height: 13px;
+      }
+    }
+
   </style>
 </head>
 
@@ -1798,6 +1873,12 @@
       <symbol id="person" viewBox="0 0 24 24">
         <circle cx="12" cy="8" r="4"/>
         <path d="M5 21v-2a7 7 0 0 1 14 0v2"/>
+      </symbol>
+      <symbol id="users" viewBox="0 0 24 24">
+        <circle cx="9" cy="8" r="3"/>
+        <path d="M3.5 19v-1.3A5.5 5.5 0 0 1 9 12.2a5.5 5.5 0 0 1 5.5 5.5V19"/>
+        <circle cx="17" cy="9" r="2.4"/>
+        <path d="M16 13.2a4.8 4.8 0 0 1 4.5 4.8v1"/>
       </symbol>
     </defs>
   </svg>
@@ -1836,10 +1917,15 @@
 
         <div class="intro">
           <h1>
-            Eliane Fen
-            <svg class="verified-badge" role="img" aria-label="Perfil verificado"><use href="#verified"/></svg>
+            <span class="profile-name">
+              Eliane Fen
+              <svg class="verified-badge" role="img" aria-label="Perfil verificado"><use href="#verified"/></svg>
+            </span>
+            <span class="subscriber-count" aria-label="578 assinantes">
+              <svg class="icon subscriber-icon" aria-hidden="true"><use href="#users"/></svg>
+              <span>578 assinantes</span>
+            </span>
           </h1>
-          <p class="handle">Conteúdo exclusivo</p>
           <p class="bio">Veja algumas prévias do meu conteúdo e fale comigo diretamente pelo Telegram. 🔥</p>
         </div>
       </header>
