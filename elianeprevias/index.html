@@ -836,15 +836,16 @@
         <div class="gallery-heading"><h2 id="gallery-title"><svg class="icon" aria-hidden="true"><use href="#photo"/></svg>6 prévias</h2><span class="gallery-note"><svg class="icon" aria-hidden="true"><use href="#fire"/></svg>Conteúdos exclusivos</span></div>
         <!-- ARQUIVOS DAS PRÉVIAS:
              previa1.jpg até previa4.jpg são imagens.
-             previa5.mp4 e previa6.mp4 são vídeos.
+             previa5.mp4 e previa6.mp4 são vídeos carregados somente ao clicar.
+             previa5-poster.jpg e previa6-poster.jpg são miniaturas leves.
              Todos devem ficar na mesma pasta deste HTML. -->
         <div class="gallery">
           <button class="preview" type="button" aria-label="Ver prévia 1"><img src="previa1.jpg" alt="Prévia 1" width="400" height="500" decoding="async"><span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Conteúdos exclusivos</span></span><span class="number" aria-hidden="true">01</span></button>
           <button class="preview" type="button" aria-label="Ver prévia 2"><img src="previa2.jpg" alt="Prévia 2" width="400" height="500" decoding="async"><span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Conteúdos exclusivos</span></span><span class="number" aria-hidden="true">02</span></button>
           <button class="preview" type="button" aria-label="Ver prévia 3"><img src="previa3.jpg" alt="Prévia 3" width="400" height="500" decoding="async"><span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Conteúdos exclusivos</span></span><span class="number" aria-hidden="true">03</span></button>
           <button class="preview" type="button" aria-label="Ver prévia 4"><img src="previa4.jpg" alt="Prévia 4" width="400" height="500" decoding="async"><span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Conteúdos exclusivos</span></span><span class="number" aria-hidden="true">04</span></button>
-          <button class="preview" type="button" aria-label="Ver prévia em vídeo 5"><video src="previa5.mp4" muted playsinline webkit-playsinline preload="auto" aria-hidden="true"></video><span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Conteúdos exclusivos</span></span><span class="number" aria-hidden="true">05</span></button>
-          <button class="preview" type="button" aria-label="Ver prévia em vídeo 6"><video src="previa6.mp4" muted playsinline webkit-playsinline preload="auto" aria-hidden="true"></video><span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Conteúdos exclusivos</span></span><span class="number" aria-hidden="true">06</span></button>
+          <button class="preview" type="button" aria-label="Ver prévia em vídeo 5" data-video="previa5.mp4"><img src="previa5-poster.jpg" alt="Prévia em vídeo 5" width="400" height="500" loading="lazy" decoding="async"><span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Conteúdos exclusivos</span></span><span class="number" aria-hidden="true">05</span></button>
+          <button class="preview" type="button" aria-label="Ver prévia em vídeo 6" data-video="previa6.mp4"><img src="previa6-poster.jpg" alt="Prévia em vídeo 6" width="400" height="500" loading="lazy" decoding="async"><span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Conteúdos exclusivos</span></span><span class="number" aria-hidden="true">06</span></button>
         </div>
       </section>
       <section class="access" aria-label="Acesso ao conteúdo completo">
@@ -866,7 +867,7 @@
   <dialog class="viewer" id="preview-viewer" aria-labelledby="viewer-title" aria-describedby="viewer-message">
     <div class="viewer-head"><strong id="viewer-title">Sua prévia</strong><button class="close-viewer" type="button" aria-label="Fechar prévia">×</button></div>
     <img class="viewer-image" id="viewer-image" alt="">
-    <video class="viewer-video" id="viewer-video" muted playsinline webkit-playsinline preload="auto" hidden></video>
+    <video class="viewer-video" id="viewer-video" muted playsinline webkit-playsinline preload="none" hidden></video>
     <p class="viewer-message" id="viewer-message" role="status">Carregando prévia…</p>
   </dialog>
   <script>
@@ -928,28 +929,6 @@
       img.addEventListener('error', hideMissing);
       if (img.complete && img.naturalWidth === 0) hideMissing();
     });
-
-    document.querySelectorAll('.preview video').forEach(video => {
-      // Alguns navegadores não desenham o primeiro frame com preload=metadata.
-      // Ao carregar os metadados, avançamos alguns milissegundos para gerar
-      // uma miniatura real do próprio vídeo.
-      const renderFirstFrame = () => {
-        try {
-          if (Number.isFinite(video.duration) && video.duration > 0) {
-            video.currentTime = Math.min(0.08, Math.max(0, video.duration / 20));
-          }
-        } catch {}
-      };
-
-      video.addEventListener('loadedmetadata', renderFirstFrame, { once: true });
-      video.addEventListener('loadeddata', () => {
-        video.style.visibility = 'visible';
-      }, { once: true });
-
-      video.addEventListener('error', () => {
-        // Mantém o card visível e deixa o fallback de fundo aparecer.
-        video.style.visibility = 'hidden';
-      });
 
       video.load();
     });
@@ -1076,11 +1055,11 @@
         clearTimeout(loadTimer);
         trigger = card;
 
-        const videoThumb = card.querySelector('video');
         const imageThumb = card.querySelector('img');
-        const isVideo = Boolean(videoThumb);
+        const videoSrc = card.dataset.video || '';
+        const isVideo = Boolean(videoSrc);
         const mediaSrc = isVideo
-          ? videoThumb.getAttribute('src')
+          ? videoSrc
           : imageThumb.getAttribute('src');
 
         document.getElementById('viewer-title').textContent =
