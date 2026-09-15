@@ -29,7 +29,7 @@
     @keyframes introTop{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
     .top-icon{width:44px;height:44px;border:1px solid var(--line);border-radius:50%;background:rgba(255,255,255,.84);display:grid;place-items:center;color:var(--ink);box-shadow:0 5px 18px rgba(41,43,46,.05)}.top-icon svg{width:20px;height:20px;fill:currentColor}.top-icon.hidden{visibility:hidden}
     .brand{text-align:center;min-width:0}.brand-kicker{font-size:11px;line-height:1;text-transform:uppercase;letter-spacing:.16em;color:#a5a19d;margin-bottom:5px}.brand-title{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .remote-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;z-index:1;background:#111}.phone[data-state="in-call"].has-remote .remote-video{display:block}
+    .remote-video{position:absolute;inset:-7.5%;width:115%;height:115%;object-fit:cover;object-position:center;display:none;z-index:1;background:#111}.phone[data-state="in-call"].has-remote .remote-video{display:block}
     .video-overlay{position:absolute;inset:0;z-index:2;display:none;pointer-events:none;background:linear-gradient(180deg,rgba(15,14,13,.45) 0%,rgba(15,14,13,.08) 30%,rgba(15,14,13,.10) 56%,rgba(15,14,13,.70) 100%)}.phone[data-state="in-call"].has-remote .video-overlay{display:block}
     .phone.signal-drop .remote-video{animation:signalJitter .22s steps(2,end) infinite;filter:saturate(.75) contrast(1.05)}
     .phone.signal-drop .video-overlay{display:block;background:linear-gradient(180deg,rgba(15,14,13,.26),rgba(15,14,13,.15),rgba(15,14,13,.58))}
