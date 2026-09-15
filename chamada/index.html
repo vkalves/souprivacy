@@ -121,7 +121,7 @@
     let state='incoming',muted=false,ringing=false,ringTimer=null,vibTimer=null,callTimer=null,seconds=0,audioCtx=null,flipping=false,facingMode='user',localStream=null,jsMotion=[],recovering=false,segment=0,sourceIndex=0,remoteLoaded=false,retryTimer=null,stutterTimer=null,stutterRelease=null,stutterStarted=false,phase='video',intermissionEndsAt=0,countdownTimer=null,chatAutoMessageShown=false;
 
 
-    const CONTROLS_HIDE_MS=3000;
+    const CONTROLS_HIDE_MS=2000;
     let controlsHideTimer=null;
     function clearControlsTimer(){clearTimeout(controlsHideTimer);controlsHideTimer=null}
     function showCallControls(){
