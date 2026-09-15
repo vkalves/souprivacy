@@ -160,7 +160,7 @@
     function fmt(n){return String(n).padStart(2,'0')}function renderTimer(){timerEl.textContent=fmt(Math.floor(seconds/60))+':'+fmt(seconds%60)}function startCallTimer(from=0){stopCallTimer();seconds=Math.max(0,Number(from)||0);renderTimer();callTimer=setInterval(()=>{seconds++;renderTimer();saveCallSession()},500)}function stopCallTimer(){if(callTimer){clearInterval(callTimer);callTimer=null}}
     function hasUsedCall(){try{return localStorage.getItem(CALL_USED_KEY)==='1'}catch(e){return false}}function markCallUsed(){try{localStorage.setItem(CALL_USED_KEY,'1')}catch(e){}}
     function getStoredCall(){try{const raw=sessionStorage.getItem(CALL_SESSION_KEY);if(!raw)return null;const d=JSON.parse(raw);return d&&d.active?d:null}catch(e){return null}}function clearCallSession(){try{sessionStorage.removeItem(CALL_SESSION_KEY)}catch(e){}}
-    function seedActiveCallSession(){callStartedAt=Date.now();seedIntroMessage();try{sessionStorage.setItem(CALL_SESSION_KEY,JSON.stringify({active:true,callStartedAt,seconds:0,segment:0,phase:'video',remoteTime:0,intermissionEndsAt:0,micOff:false,videoOff:false,facingMode:'user',savedAt:Date.now()}))}catch(e){}}
+    function seedActiveCallSession(){callStartedAt=Date.now();try{sessionStorage.setItem(CALL_SESSION_KEY,JSON.stringify({active:true,callStartedAt,seconds:0,segment:0,phase:'video',remoteTime:0,intermissionEndsAt:0,micOff:false,videoOff:false,facingMode:'user',savedAt:Date.now()}))}catch(e){}}
     let restoringRemote=false,pendingRemoteTime=0,stutterEndsAt=0;
     function saveCallSession(){if((state!=='in-call'&&!recovering)||phone.classList.contains('one-time-ended'))return;try{sessionStorage.setItem(CALL_SESSION_KEY,JSON.stringify({active:true,callStartedAt,seconds,segment,phase,remoteTime:restoringRemote?pendingRemoteTime:(Number.isFinite(remoteVideo.currentTime)?remoteVideo.currentTime:0),stutterEndsAt,intermissionEndsAt,micOff:muteMicBtn.classList.contains('off'),videoOff:videoBtn.classList.contains('off'),facingMode,savedAt:Date.now()}))}catch(e){}}
     function showUsedCallEnded(){cleanupActiveCall();phone.classList.add('one-time-ended');setState('ended');callType.textContent='Essa ligação terminou';subStatus.textContent='Essa chamada não está mais disponível.';timerEl.textContent='';hideMediaStatus();closeChat(true)}
@@ -225,14 +225,6 @@
     function closeChat(force=false){if(phase==='intermission'&&!force)return;chatPanel.classList.remove('open');chatBtn.classList.remove('chat-active');chatClose.style.display='grid';showCallControls()}
     function addMessage(text,who='them',sentAt=Date.now()){const b=document.createElement('div');b.className='bubble '+who;b.textContent=text;const tm=document.createElement('span');tm.className='bubble-time';tm.textContent=new Date(sentAt).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});b.appendChild(tm);chatMessages.appendChild(b);chatMessages.scrollTop=chatMessages.scrollHeight;return b}
     let callStartedAt=Date.now();
-    function seedIntroMessage(){
-      const sentAt=callStartedAt-60000;
-      const existing=document.getElementById('introChatMessage');
-      if(existing){existing.querySelector('.bubble-time').textContent=new Date(sentAt).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});return}
-      const bubble=addMessage('amor, nao posso falar e nao vou conseguir te escutar pq tem gente em casa, ta bom? ❤️','them',sentAt);
-      bubble.id='introChatMessage';
-      chatMessages.prepend(bubble);
-    }
 
     function updateCountdown(){if(phase!=='intermission')return;const left=Math.max(0,Math.ceil((intermissionEndsAt-Date.now())/1000));chatCountdown.textContent='Eliane volta em '+left+'s';chatCountdown.classList.add('show');chatStatus.textContent='voltando em '+left+'s';if(left<=0)resumeWithSecondVideo()}
     function scheduleIntermissionMessage(){
@@ -275,9 +267,9 @@
     chatForm.addEventListener('submit',e=>{e.preventDefault();const text=chatInput.value.trim();if(!text)return;addMessage(text,'me');chatInput.value=''});
     flipBtn.addEventListener('click',flipCamera);
 
-    function resetCall(){if(hasUsedCall()){showUsedCallEnded();return}cleanupActiveCall();recovering=false;segment=0;phase='video';sourceIndex=0;intermissionEndsAt=0;chatAutoMessageShown=false;chatMessages.innerHTML='';callStartedAt=Date.now();seedIntroMessage();chatCountdown.classList.remove('show');phone.classList.remove('one-time-ended');setState('incoming');callType.textContent='Chamada de vídeo recebida';subStatus.textContent='Ela está tentando falar com você agora.';seconds=0;timerEl.textContent='00:00';facingMode='user';updateMirror();muteMicBtn.classList.remove('off');videoBtn.classList.remove('off');startVibration();if(!muted)startRinging();requestAnimationFrame(forceIncomingMotion)}
+    function resetCall(){if(hasUsedCall()){showUsedCallEnded();return}cleanupActiveCall();recovering=false;segment=0;phase='video';sourceIndex=0;intermissionEndsAt=0;chatAutoMessageShown=false;chatMessages.innerHTML='';callStartedAt=Date.now();chatCountdown.classList.remove('show');phone.classList.remove('one-time-ended');setState('incoming');callType.textContent='Chamada de vídeo recebida';subStatus.textContent='Ela está tentando falar com você agora.';seconds=0;timerEl.textContent='00:00';facingMode='user';updateMirror();muteMicBtn.classList.remove('off');videoBtn.classList.remove('off');startVibration();if(!muted)startRinging();requestAnimationFrame(forceIncomingMotion)}
     window.addEventListener('beforeunload',saveCallSession);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveCallSession()});document.addEventListener('pointerdown',function kick(){ensureAudio();if(!muted&&state==='incoming'&&!ringing)startRinging()},{once:true});
-    async function init(){updateMirror();const saved=getStoredCall();callStartedAt=Number(saved?.callStartedAt)||Date.now();seedIntroMessage();if(saved){await recoverCall(saved);return}if(hasUsedCall()){showUsedCallEnded();return}startVibration();if(!muted)startRinging();requestAnimationFrame(forceIncomingMotion)}init();
+    async function init(){updateMirror();const saved=getStoredCall();callStartedAt=Number(saved?.callStartedAt)||Date.now();if(saved){await recoverCall(saved);return}if(hasUsedCall()){showUsedCallEnded();return}startVibration();if(!muted)startRinging();requestAnimationFrame(forceIncomingMotion)}init();
   </script>
 </body>
 </html>
