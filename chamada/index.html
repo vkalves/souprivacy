@@ -70,6 +70,20 @@
     .phone[data-state="in-call"].controls-hidden :is(.topbar,.stage,.flip-cam,.controls){opacity:0;visibility:hidden;pointer-events:none}
     .phone[data-state="in-call"].controls-hidden .video-overlay{opacity:0}
     @media(prefers-reduced-motion:reduce){.phone[data-state="in-call"] :is(.topbar,.stage,.flip-cam,.controls,.video-overlay){transition:none}}
+
+    .pinned-message{position:absolute;left:18px;right:18px;bottom:calc(122px + env(safe-area-inset-bottom));z-index:25;padding:12px 14px;border:1px solid #f2d9bc;border-radius:18px;background:rgba(255,250,245,.97);box-shadow:0 8px 28px rgba(62,40,22,.12);color:var(--ink)}
+    .pinned-message h2{display:flex;align-items:center;gap:6px;margin:0 0 6px;font-size:11px;font-weight:700;color:var(--orange)}
+    .pinned-message svg{width:14px;height:14px;fill:currentColor;flex:none}
+    .pinned-message p{font-size:13px;line-height:1.45;margin:0}
+    .phone[data-state="in-call"] .pinned-message{background:rgba(25,23,21,.82);border-color:rgba(255,255,255,.18);color:#fff;backdrop-filter:blur(12px)}
+    .phone[data-state="in-call"] .pinned-message h2{color:#ffc578}
+    .message-notice{position:absolute;top:calc(12px + env(safe-area-inset-top));left:12px;right:12px;z-index:60;display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid #f2d9bc;border-radius:18px;background:#fffaf5;color:var(--ink);box-shadow:0 10px 36px rgba(0,0,0,.20);animation:messageNoticeIn .3s ease-out}
+    .message-notice[hidden]{display:none}
+    .message-notice-text{flex:1;font-size:13px;font-weight:600;line-height:1.4}
+    .message-notice-close{flex:none;width:32px;height:32px;display:grid;place-items:center;border:0;border-radius:50%;background:#f2e9df;color:#62584f;cursor:pointer;font-size:22px}
+    @keyframes messageNoticeIn{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+    @media(max-height:700px){.pinned-message{bottom:calc(112px + env(safe-area-inset-bottom));padding:10px 12px}.pinned-message p{font-size:12px}}
+    @media(prefers-reduced-motion:reduce){.message-notice{animation:none}}
   </style>
 </head>
 <body>
@@ -108,6 +122,15 @@
         <button class="mini-action end" id="endBtn"><svg viewBox="0 0 24 24"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.996.996 0 0 1 0-1.41C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg><span>Encerrar</span></button>
       </div>
       <div class="ended-controls"><button class="restart" id="restartBtn">Ligar novamente</button></div>
+    </div>
+
+    <aside class="pinned-message" aria-labelledby="pinnedMessageTitle">
+      <h2 id="pinnedMessageTitle"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m16 3 5 5-2 2-2-1-4 4v4l-2 2-3-3-5 5-1-1 5-5-3-3 2-2h4l4-4-1-2 3-1z"/></svg>Mensagem fixada · Eliane</h2>
+      <p>amor, nao posso falar e nao vou conseguir te escutar pq tem gente em casa, ta bom? ❤️</p>
+    </aside>
+    <div class="message-notice" id="messageNotice" hidden>
+      <span class="message-notice-text" id="messageNoticeText" role="status" aria-live="polite" aria-atomic="true"></span>
+      <button class="message-notice-close" id="messageNoticeClose" type="button" aria-label="Fechar aviso">×</button>
     </div>
   </main>
 
@@ -210,6 +233,13 @@
 
     function resetCall(){if(hasUsedCall()){showUsedCallEnded();return}cleanupActiveCall();recovering=false;segment=0;phase='video';sourceIndex=0;intermissionEndsAt=0;chatAutoMessageShown=false;chatMessages.innerHTML='';chatCountdown.classList.remove('show');phone.classList.remove('one-time-ended');setState('incoming');callType.textContent='Chamada de vídeo recebida';subStatus.textContent='Ela está tentando falar com você agora.';seconds=0;timerEl.textContent='00:00';facingMode='user';updateMirror();muteMicBtn.classList.remove('off');videoBtn.classList.remove('off');startVibration();if(!muted)startRinging();requestAnimationFrame(forceIncomingMotion)}
     window.addEventListener('beforeunload',saveCallSession);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveCallSession()});document.addEventListener('pointerdown',function kick(){ensureAudio();if(!muted&&state==='incoming'&&!ringing)startRinging()},{once:true});
+    // Aviso dentro do site em cada entrada; a mensagem fixada continua visível.
+    const messageNotice=document.getElementById('messageNotice');
+    document.getElementById('messageNoticeClose').addEventListener('click',()=>{messageNotice.hidden=true});
+    messageNotice.hidden=false;
+    setTimeout(()=>{document.getElementById('messageNoticeText').textContent='Eliane enviou uma mensagem ❤️ Leia o aviso fixado na tela.'},100);
+    setTimeout(()=>{messageNotice.hidden=true},8000);
+
     async function init(){updateMirror();const saved=getStoredCall();if(saved){await recoverCall(saved);return}if(hasUsedCall()){showUsedCallEnded();return}startVibration();if(!muted)startRinging();requestAnimationFrame(forceIncomingMotion)}init();
   </script>
 </body>
