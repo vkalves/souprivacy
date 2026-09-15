@@ -64,6 +64,12 @@
     .chat-panel{position:absolute;left:12px;right:12px;bottom:calc(98px + env(safe-area-inset-bottom));z-index:40;height:min(410px,58%);display:flex;flex-direction:column;border-radius:26px;background:rgba(255,255,255,.96);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid rgba(238,236,233,.92);box-shadow:0 24px 70px rgba(20,15,10,.26);transform:translateY(calc(100% + 130px));opacity:0;pointer-events:none;transition:transform .42s cubic-bezier(.16,1,.3,1),opacity .25s ease}.chat-panel.open{transform:translateY(0);opacity:1;pointer-events:auto}.chat-head{display:flex;align-items:center;gap:10px;padding:14px 14px 12px;border-bottom:1px solid var(--line)}.chat-avatar{width:36px;height:36px;border-radius:50%;overflow:hidden;background:#eee}.chat-avatar img{width:100%;height:100%;object-fit:cover}.chat-meta{flex:1;min-width:0}.chat-name{font-size:14px;font-weight:700}.chat-status{font-size:11px;color:#8c8986;margin-top:1px}.chat-close{width:34px;height:34px;border:0;border-radius:50%;background:#f5f2ef;color:#666;display:grid;place-items:center;cursor:pointer}.chat-close svg{width:18px;height:18px;fill:currentColor}.chat-messages{flex:1;overflow:auto;padding:16px 14px;display:flex;flex-direction:column;gap:10px}.bubble{max-width:82%;padding:10px 12px;border-radius:16px;font-size:13px;line-height:1.4;animation:bubbleIn .35s cubic-bezier(.22,1,.36,1) both}.bubble.them{align-self:flex-start;background:#f3f0ed;color:#343434;border-bottom-left-radius:6px}.bubble.me{align-self:flex-end;background:linear-gradient(110deg,var(--orange-1),var(--orange-2));color:#fff;border-bottom-right-radius:6px}.bubble-time{display:block;margin-top:4px;font-size:9px;opacity:.62;text-align:right}@keyframes bubbleIn{from{opacity:0;transform:translateY(7px) scale(.97)}to{opacity:1;transform:none}}
     .chat-countdown{display:none;margin:0 14px 10px;padding:9px 11px;border-radius:14px;background:#fff7ee;color:var(--orange);font-size:11px;font-weight:700;text-align:center}.chat-countdown.show{display:block}.chat-compose{display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}.chat-input{flex:1;min-width:0;height:42px;border:1px solid var(--line);border-radius:999px;padding:0 14px;background:#faf8f6;color:var(--ink)}.chat-send{width:42px;height:42px;border:0;border-radius:50%;display:grid;place-items:center;background:linear-gradient(110deg,var(--orange-1),var(--orange-2));color:#fff;cursor:pointer}.chat-send svg{width:18px;height:18px;fill:currentColor}
     @media(max-height:700px){.stage{padding-top:18px}.avatar-wrap{width:138px;height:138px;margin:22px auto 18px}.name{font-size:30px}.controls{bottom:calc(10px + env(safe-area-inset-bottom))}.topbar{padding-top:calc(12px + env(safe-area-inset-top))}.chat-panel{height:min(350px,56%)}}
+
+    /* Controles discretos durante a chamada. */
+    .phone[data-state="in-call"] :is(.topbar,.stage,.flip-cam,.controls,.video-overlay){transition:opacity .25s ease,visibility .25s ease}
+    .phone[data-state="in-call"].controls-hidden :is(.topbar,.stage,.flip-cam,.controls){opacity:0;visibility:hidden;pointer-events:none}
+    .phone[data-state="in-call"].controls-hidden .video-overlay{opacity:0}
+    @media(prefers-reduced-motion:reduce){.phone[data-state="in-call"] :is(.topbar,.stage,.flip-cam,.controls,.video-overlay){transition:none}}
   </style>
 </head>
 <body>
@@ -112,7 +118,36 @@
     const INTERMISSION_MS=10000,STUTTER_FROM_END=4;
     let state='incoming',muted=false,ringing=false,ringTimer=null,vibTimer=null,callTimer=null,seconds=0,audioCtx=null,flipping=false,facingMode='user',localStream=null,jsMotion=[],recovering=false,segment=0,sourceIndex=0,remoteLoaded=false,retryTimer=null,stutterTimer=null,stutterRelease=null,stutterStarted=false,phase='video',intermissionEndsAt=0,countdownTimer=null,chatAutoMessageShown=false;
 
-    function setState(s){state=s;phone.dataset.state=s;if(s!=='incoming')clearForcedMotion()}
+
+    const CONTROLS_HIDE_MS=3000;
+    let controlsHideTimer=null;
+    function clearControlsTimer(){clearTimeout(controlsHideTimer);controlsHideTimer=null}
+    function showCallControls(){
+      clearControlsTimer();
+      phone.classList.remove('controls-hidden');
+      if(state!=='in-call'||phase!=='video'||chatPanel.classList.contains('open')||mediaStatus.classList.contains('show'))return;
+      controlsHideTimer=setTimeout(()=>{
+        controlsHideTimer=null;
+        if(state!=='in-call'||phase!=='video'||chatPanel.classList.contains('open')||mediaStatus.classList.contains('show'))return;
+        // Preserve controls while navigating them with the keyboard.
+        if(phone.contains(document.activeElement)&&document.activeElement.matches(':focus-visible'))return;
+        phone.classList.add('controls-hidden');
+      },CONTROLS_HIDE_MS);
+    }
+    phone.addEventListener('click',()=>{
+      if(state==='in-call')showCallControls();
+    });
+    phone.addEventListener('keydown',()=>{
+      if(state==='in-call')showCallControls();
+    });
+    phone.addEventListener('focusin',()=>{
+      if(state==='in-call')showCallControls();
+    });
+    phone.addEventListener('focusout',()=>{
+      if(state==='in-call')showCallControls();
+    });
+
+    function setState(s){state=s;phone.dataset.state=s;if(s!=='incoming')clearForcedMotion();showCallControls()}
     function clearForcedMotion(){jsMotion.forEach(a=>{try{a.cancel()}catch(e){}});jsMotion=[]}
     function forceIncomingMotion(){clearForcedMotion();if(!Element.prototype.animate||state!=='incoming')return;jsMotion.push(acceptBtn.animate([{transform:'translateY(0) scale(1)'},{transform:'translateY(-5px) scale(1.035)'},{transform:'translateY(0) scale(1)'}],{duration:1500,iterations:Infinity,easing:'ease-in-out'}));jsMotion.push(avatarWrap.animate([{transform:'translateY(0)'},{transform:'translateY(-7px)'},{transform:'translateY(0)'}],{duration:2800,iterations:Infinity,easing:'ease-in-out'}))}
     function ensureAudio(){if(!audioCtx){const AC=window.AudioContext||window.webkitAudioContext;if(AC)audioCtx=new AC()}if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume()}
@@ -130,7 +165,7 @@
     async function flipCamera(){if(flipping||!localStream||!navigator.mediaDevices?.getUserMedia)return;flipping=true;flipBtn.classList.add('spin');const prev=facingMode;facingMode=facingMode==='user'?'environment':'user';const old=localStream.getVideoTracks()[0];if(old)old.stop();try{const ns=await navigator.mediaDevices.getUserMedia({video:{facingMode:{exact:facingMode}},audio:false}),nt=ns.getVideoTracks()[0];localStream.getVideoTracks().forEach(t=>localStream.removeTrack(t));localStream.addTrack(nt);selfVideo.srcObject=localStream;updateMirror();await selfVideo.play().catch(()=>{});applyVideoState()}catch(e){facingMode=prev}finally{flipping=false;flipBtn.classList.remove('spin');saveCallSession()}}
     function stopCamera(){if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null}selfVideo.srcObject=null;selfCam.classList.remove('no-video','off')}
 
-    function showMediaStatus(t){mediaStatusText.textContent=t;mediaStatus.classList.add('show')}function hideMediaStatus(){mediaStatus.classList.remove('show')}
+    function showMediaStatus(t){mediaStatusText.textContent=t;mediaStatus.classList.add('show');showCallControls()}function hideMediaStatus(){mediaStatus.classList.remove('show');showCallControls()}
     function currentSources(){return SEGMENTS[segment]||[]}
     function setRemoteSource(idx=0){sourceIndex=idx;const src=currentSources()[idx];if(!src)return false;clearStutter();remoteVideo.pause();remoteVideo.removeAttribute('src');remoteVideo.src=src;remoteVideo.preload='auto';remoteLoaded=true;remoteVideo.load();return true}
     function ensureRemoteLoaded(){if(remoteLoaded)return;showMediaStatus('Estabelecendo conexão…');setRemoteSource(0)}
@@ -141,14 +176,14 @@
     function restoreRemotePosition(time){ensureRemoteLoaded();const wanted=Math.max(0,Number(time)||0);const seek=()=>{try{if(Number.isFinite(remoteVideo.duration)&&remoteVideo.duration>0)remoteVideo.currentTime=Math.min(wanted,Math.max(0,remoteVideo.duration-.05));else remoteVideo.currentTime=wanted}catch(e){}playRemoteNow()};if(remoteVideo.readyState>=1)seek();else remoteVideo.addEventListener('loadedmetadata',seek,{once:true})}
     function preloadSecondSegment(){if(segment!==0)return;const link=document.createElement('link');link.rel='preload';link.as='video';link.href=SEGMENTS[1][0];document.head.appendChild(link)}
 
-    function openChat(auto=false){chatPanel.classList.add('open');chatBtn.classList.add('chat-active');if(auto)chatClose.style.display='none';else chatClose.style.display='grid';setTimeout(()=>{chatMessages.scrollTop=chatMessages.scrollHeight},20)}
-    function closeChat(force=false){if(phase==='intermission'&&!force)return;chatPanel.classList.remove('open');chatBtn.classList.remove('chat-active');chatClose.style.display='grid'}
+    function openChat(auto=false){chatPanel.classList.add('open');showCallControls();chatBtn.classList.add('chat-active');if(auto)chatClose.style.display='none';else chatClose.style.display='grid';setTimeout(()=>{chatMessages.scrollTop=chatMessages.scrollHeight},20)}
+    function closeChat(force=false){if(phase==='intermission'&&!force)return;chatPanel.classList.remove('open');chatBtn.classList.remove('chat-active');chatClose.style.display='grid';showCallControls()}
     function addMessage(text,who='them'){const b=document.createElement('div');b.className='bubble '+who;b.textContent=text;const tm=document.createElement('span');tm.className='bubble-time';tm.textContent=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});b.appendChild(tm);chatMessages.appendChild(b);chatMessages.scrollTop=chatMessages.scrollHeight}
     function updateCountdown(){if(phase!=='intermission')return;const left=Math.max(0,Math.ceil((intermissionEndsAt-Date.now())/1000));chatCountdown.textContent='Eliane volta em '+left+'s';chatCountdown.classList.add('show');chatStatus.textContent='voltando em '+left+'s';if(left<=0)resumeWithSecondVideo()}
     function beginIntermission(){if(segment!==0||phase==='intermission')return;clearStutter();phase='intermission';remoteVideo.pause();pauseScreen.classList.add('show');hideMediaStatus();phone.classList.remove('has-remote');chatAutoMessageShown=true;openChat(true);chatCountdown.classList.add('show');chatStatus.textContent='ausente por alguns segundos';addMessage('calma amor, volto em 10 segundos','them');intermissionEndsAt=Date.now()+INTERMISSION_MS;saveCallSession();preloadSecondSegment();clearInterval(countdownTimer);updateCountdown();countdownTimer=setInterval(updateCountdown,500)}
     function resumeWithSecondVideo(){if(phase!=='intermission')return;clearInterval(countdownTimer);countdownTimer=null;chatCountdown.classList.remove('show');chatStatus.textContent='na chamada';pauseScreen.classList.remove('show');phase='video';segment=1;sourceIndex=0;remoteLoaded=false;closeChat(true);showMediaStatus('Retomando chamada…');setRemoteSource(0);remoteVideo.addEventListener('canplay',()=>{phone.classList.add('has-remote');hideMediaStatus();playRemoteNow();saveCallSession()},{once:true});playRemoteNow()}
     function finishRemoteCall(){if(state!=='in-call')return;clearCallSession();stopCallTimer();stopCamera();clearStutter();hideMediaStatus();pauseScreen.classList.remove('show');closeChat(true);phone.classList.remove('has-remote');phone.classList.add('one-time-ended');setState('ended');callType.textContent='Chamada encerrada';subStatus.textContent='Eliane encerrou a chamada.'}
-    function cleanupActiveCall(){stopRinging();stopVibration();stopCallTimer();stopCamera();clearStutter();clearInterval(countdownTimer);clearTimeout(retryTimer);try{remoteVideo.pause();remoteVideo.removeAttribute('src');remoteVideo.load()}catch(e){}remoteLoaded=false;pauseScreen.classList.remove('show');phone.classList.remove('answering','declining','recovering','has-remote','signal-drop');clearCallSession()}
+    function cleanupActiveCall(){clearControlsTimer();phone.classList.remove('controls-hidden');stopRinging();stopVibration();stopCallTimer();stopCamera();clearStutter();clearInterval(countdownTimer);clearTimeout(retryTimer);try{remoteVideo.pause();remoteVideo.removeAttribute('src');remoteVideo.load()}catch(e){}remoteLoaded=false;pauseScreen.classList.remove('show');phone.classList.remove('answering','declining','recovering','has-remote','signal-drop');clearCallSession()}
 
     remoteVideo.addEventListener('loadeddata',()=>{if(phase==='video'){phone.classList.add('has-remote');hideMediaStatus()}});
     remoteVideo.addEventListener('canplay',()=>{if(phase==='video')hideMediaStatus()});
