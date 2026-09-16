@@ -144,7 +144,7 @@
     const CALL_SESSION_KEY='eliane-fen-active-call-v3',CALL_USED_KEY='eliane-fen-call-used-v1';
     const SEGMENTS=[['https://chamada.b-cdn.net/IMG_2720.MP4'],['https://chamada.b-cdn.net/IMG_2721.MP4']];
     const INTERMISSION_MS=10000,STUTTER_FROM_END=4;
-    let state='incoming',muted=false,ringing=false,ringTimer=null,vibTimer=null,callTimer=null,seconds=0,audioCtx=null,flipping=false,facingMode='user',localStream=null,jsMotion=[],recovering=false,segment=0,sourceIndex=0,remoteLoaded=false,retryTimer=null,stutterTimer=null,stutterRelease=null,stutterStarted=false,phase='video',intermissionEndsAt=0,countdownTimer=null,chatAutoMessageShown=false,qualityLowUntil=0,qualityStartupUntil=0,controlsHideTimer=null;
+    let state='incoming',muted=false,ringing=false,ringTimer=null,vibTimer=null,callTimer=null,seconds=0,audioCtx=null,flipping=false,facingMode='user',localStream=null,jsMotion=[],recovering=false,segment=0,sourceIndex=0,remoteLoaded=false,retryTimer=null,remoteRetryCount=0,stallRecoveryTimer=null,stutterTimer=null,stutterRelease=null,stutterStarted=false,phase='video',intermissionEndsAt=0,countdownTimer=null,chatAutoMessageShown=false,qualityLowUntil=0,qualityStartupUntil=0,controlsHideTimer=null;
 
     const networkInfo=navigator.connection||navigator.mozConnection||navigator.webkitConnection||null;
     const PROFILE_IMAGE_CANDIDATES=[
@@ -231,7 +231,34 @@
     function playRemoteNow(){ensureRemoteLoaded();try{remoteVideo.muted=false;const p=remoteVideo.play();if(p?.catch)p.catch(()=>{remoteVideo.muted=true;remoteVideo.play().catch(()=>{})})}catch(e){}}
     function clearStutter(){clearInterval(stutterTimer);clearTimeout(stutterRelease);stutterTimer=null;stutterRelease=null;stutterStarted=false;phone.classList.remove('signal-drop');markQualityStable()}
     function startStutter(){if(stutterStarted||segment!==0||phase!=='video')return;stutterStarted=true;phone.classList.add('signal-drop');markQualityLow(6500);stutterTimer=setInterval(()=>{if(state!=='in-call'||segment!==0||phase!=='video'){clearStutter();return}try{if(!remoteVideo.paused){remoteVideo.pause();stutterRelease=setTimeout(()=>remoteVideo.play().catch(()=>{}),170+Math.random()*180)}}catch(e){}},720)}
-    function retryRemote(){if(state!=='in-call'&&state!=='connecting')return;clearTimeout(retryTimer);retryTimer=setTimeout(()=>{const t=Number.isFinite(remoteVideo.currentTime)?remoteVideo.currentTime:0;remoteVideo.load();remoteVideo.addEventListener('loadedmetadata',()=>{try{remoteVideo.currentTime=t}catch(e){}playRemoteNow()},{once:true})},1200)}
+    function clearRemoteRecovery(){clearTimeout(stallRecoveryTimer);stallRecoveryTimer=null}
+    function retryRemote(){
+      if(state!=='in-call'&&state!=='connecting')return;
+      clearTimeout(retryTimer);
+      clearRemoteRecovery();
+      if(remoteRetryCount>=2){
+        hideMediaStatus();
+        return;
+      }
+      retryTimer=setTimeout(()=>{
+        if(remoteVideo.readyState>=3&&!remoteVideo.paused){remoteRetryCount=0;hideMediaStatus();return}
+        remoteRetryCount++;
+        const t=Number.isFinite(remoteVideo.currentTime)?remoteVideo.currentTime:0;
+        try{remoteVideo.load()}catch(e){}
+        remoteVideo.addEventListener('loadedmetadata',()=>{
+          try{remoteVideo.currentTime=t}catch(e){}
+          playRemoteNow();
+        },{once:true});
+      },2500)
+    }
+    function scheduleRemoteRecovery(){
+      clearRemoteRecovery();
+      stallRecoveryTimer=setTimeout(()=>{
+        if((state==='in-call'||state==='connecting')&&phase==='video'&&remoteVideo.readyState<3&&!remoteVideo.ended){
+          retryRemote();
+        }
+      },6000)
+    }
     function restoreRemotePosition(time){ensureRemoteLoaded();const wanted=Math.max(0,Number(time)||0);const seek=()=>{try{if(Number.isFinite(remoteVideo.duration)&&remoteVideo.duration>0)remoteVideo.currentTime=Math.min(wanted,Math.max(0,remoteVideo.duration-.05));else remoteVideo.currentTime=wanted}catch(e){}playRemoteNow()};if(remoteVideo.readyState>=1)seek();else remoteVideo.addEventListener('loadedmetadata',seek,{once:true})}
     function preloadSecondSegment(){if(segment!==0)return;const link=document.createElement('link');link.rel='preload';link.as='video';link.href=SEGMENTS[1][0];document.head.appendChild(link)}
 
@@ -242,16 +269,16 @@
     function beginIntermission(){if(segment!==0||phase==='intermission')return;clearStutter();phase='intermission';remoteVideo.pause();pauseScreen.classList.add('show');hideMediaStatus();phone.classList.remove('has-remote');chatAutoMessageShown=true;openChat(true);chatCountdown.classList.add('show');chatStatus.textContent='ausente por alguns segundos';addMessage('calma amor, volto em 10 segundos','them');intermissionEndsAt=Date.now()+INTERMISSION_MS;saveCallSession();preloadSecondSegment();clearInterval(countdownTimer);updateCountdown();countdownTimer=setInterval(updateCountdown,500)}
     function resumeWithSecondVideo(){if(phase!=='intermission')return;clearInterval(countdownTimer);countdownTimer=null;chatCountdown.classList.remove('show');chatStatus.textContent='na chamada';pauseScreen.classList.remove('show');phase='video';segment=1;sourceIndex=0;remoteLoaded=false;closeChat(true);showMediaStatus('Retomando chamada…');setRemoteSource(0);remoteVideo.addEventListener('canplay',()=>{phone.classList.add('has-remote');hideMediaStatus();playRemoteNow();saveCallSession()},{once:true});playRemoteNow()}
     function finishRemoteCall(){if(state!=='in-call')return;clearCallSession();stopCallTimer();stopCamera();clearStutter();hideMediaStatus();pauseScreen.classList.remove('show');closeChat(true);phone.classList.remove('has-remote');phone.classList.add('one-time-ended');setState('ended');callType.textContent='Chamada encerrada';subStatus.textContent='Eliane encerrou a chamada.'}
-    function cleanupActiveCall(){stopRinging();stopVibration();stopCallTimer();stopCamera();clearStutter();clearControlsAutoHide();clearInterval(countdownTimer);clearTimeout(retryTimer);try{remoteVideo.pause();remoteVideo.removeAttribute('src');remoteVideo.load()}catch(e){}remoteLoaded=false;pauseScreen.classList.remove('show');phone.classList.remove('answering','declining','recovering','has-remote','signal-drop');clearCallSession()}
+    function cleanupActiveCall(){stopRinging();stopVibration();stopCallTimer();stopCamera();clearStutter();clearRemoteRecovery();clearControlsAutoHide();clearInterval(countdownTimer);clearTimeout(retryTimer);try{remoteVideo.pause();remoteVideo.removeAttribute('src');remoteVideo.load()}catch(e){}remoteLoaded=false;remoteRetryCount=0;pauseScreen.classList.remove('show');phone.classList.remove('answering','declining','recovering','has-remote','signal-drop');clearCallSession()}
 
-    remoteVideo.addEventListener('loadeddata',()=>{if(phase==='video'){phone.classList.add('has-remote');hideMediaStatus();markQualityStable()}});
-    remoteVideo.addEventListener('canplay',()=>{if(phase==='video'){hideMediaStatus();markQualityStable()}});
-    remoteVideo.addEventListener('playing',()=>{if(phase==='video'){hideMediaStatus();markQualityStable()}});
-    remoteVideo.addEventListener('timeupdate',()=>{if(segment===0&&phase==='video'&&Number.isFinite(remoteVideo.duration)){const remain=remoteVideo.duration-remoteVideo.currentTime;if(remain<=STUTTER_FROM_END&&remain>0)startStutter()}saveCallSession()});
-    remoteVideo.addEventListener('waiting',()=>{if(state==='in-call'&&phase==='video'&&!stutterStarted){markQualityLow();showMediaStatus('Sinal instável. Estabilizando chamada…')}});
-    remoteVideo.addEventListener('stalled',()=>{if(state==='in-call'&&phase==='video'){markQualityLow(6000);showMediaStatus('Reconectando chamada…');retryRemote()}});
+    remoteVideo.addEventListener('loadeddata',()=>{if(phase==='video'){phone.classList.add('has-remote');remoteRetryCount=0;clearRemoteRecovery();hideMediaStatus();markQualityStable()}});
+    remoteVideo.addEventListener('canplay',()=>{if(phase==='video'){remoteRetryCount=0;clearRemoteRecovery();hideMediaStatus();markQualityStable()}});
+    remoteVideo.addEventListener('playing',()=>{if(phase==='video'){remoteRetryCount=0;clearRemoteRecovery();hideMediaStatus();markQualityStable()}});
+    remoteVideo.addEventListener('timeupdate',()=>{if(remoteVideo.currentTime>0){remoteRetryCount=0;clearRemoteRecovery()}if(segment===0&&phase==='video'&&Number.isFinite(remoteVideo.duration)){const remain=remoteVideo.duration-remoteVideo.currentTime;if(remain<=STUTTER_FROM_END&&remain>0)startStutter()}saveCallSession()});
+    remoteVideo.addEventListener('waiting',()=>{if(state==='in-call'&&phase==='video'&&!stutterStarted){markQualityLow();showMediaStatus('Sinal instável. Aguardando vídeo…');scheduleRemoteRecovery()}});
+    remoteVideo.addEventListener('stalled',()=>{if(state==='in-call'&&phase==='video'&&!stutterStarted){markQualityLow(6000);showMediaStatus('Sinal instável. Aguardando vídeo…');scheduleRemoteRecovery()}});
     remoteVideo.addEventListener('ended',()=>{if(segment===0)beginIntermission();else finishRemoteCall()});
-    remoteVideo.addEventListener('error',()=>{markQualityLow(7000);if(sourceIndex+1<currentSources().length){showMediaStatus('Restabelecendo conexão…');setRemoteSource(sourceIndex+1);playRemoteNow()}else{showMediaStatus('Não foi possível restabelecer a chamada.')}});
+    remoteVideo.addEventListener('error',()=>{clearRemoteRecovery();markQualityLow(7000);if(sourceIndex+1<currentSources().length){showMediaStatus('Restabelecendo conexão…');setRemoteSource(sourceIndex+1);playRemoteNow()}else{showMediaStatus('Não foi possível carregar o vídeo. Verifique se o arquivo terminou de enviar na Bunny.')}});
     window.addEventListener('online',()=>{markQualityStable();if(state==='in-call'&&phase==='video'){showMediaStatus('Conexão restaurada. Retomando chamada…');retryRemote()}});
 
     async function recoverCall(saved){recovering=true;stopRinging();stopVibration();clearForcedMotion();phone.classList.remove('one-time-ended');phone.classList.add('recovering');setState('connecting');callType.textContent='Recuperando chamada';subStatus.textContent='Aguarde um instante. Estamos restaurando sua chamada.';connectingCard.textContent='Recuperando chamada…';seconds=Math.max(0,Number(saved.seconds)||0);renderTimer();segment=saved.segment===1?1:0;phase=saved.phase==='intermission'?'intermission':'video';intermissionEndsAt=Number(saved.intermissionEndsAt)||0;facingMode=saved.facingMode==='environment'?'environment':'user';muteMicBtn.classList.toggle('off',!!saved.micOff);videoBtn.classList.toggle('off',!!saved.videoOff);updateMirror();const cam=startCamera();await new Promise(r=>setTimeout(r,3000));await cam.catch(()=>false);setState('in-call');phone.classList.remove('recovering');recovering=false;callType.textContent='Chamada de vídeo';subStatus.textContent='';connectingCard.textContent='Conectando sua câmera com segurança…';startCallTimer(seconds);applyMicState();applyVideoState();if(phase==='intermission'){pauseScreen.classList.add('show');openChat(true);if(!chatAutoMessageShown){addMessage('calma amor, volto em 10 segundos','them');chatAutoMessageShown=true}if(intermissionEndsAt<=Date.now()){resumeWithSecondVideo()}else{clearInterval(countdownTimer);updateCountdown();countdownTimer=setInterval(updateCountdown,500)}}else{remoteLoaded=false;sourceIndex=0;showMediaStatus('Retomando chamada…');setRemoteSource(0);restoreRemotePosition(saved.remoteTime)}saveCallSession()}
