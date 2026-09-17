@@ -2347,6 +2347,35 @@
       }
     }
 
+
+    /* Ajustes solicitados: capa levemente desfocada e avatar sem expansão */
+    .cover {
+      background-image: none;
+    }
+
+    .cover::before {
+      content: "";
+      position: absolute;
+      inset: -6px;
+      z-index: 0;
+      background: #ff8a00 url("capa.jpg") center / cover no-repeat;
+      filter: blur(4px);
+      transform: scale(1.03);
+      pointer-events: none;
+    }
+
+    .cover::after {
+      z-index: 1;
+    }
+
+    .avatar {
+      cursor: default;
+    }
+
+    .avatar:active {
+      transform: none;
+    }
+
   </style>
 </head>
 
@@ -2413,10 +2442,10 @@
 
         <div class="topbar">
           <div class="identity">
-            <button class="avatar" id="profile-avatar" type="button" aria-label="Expandir foto de perfil" aria-haspopup="dialog">
+            <div class="avatar" id="profile-avatar" aria-label="Foto de perfil">
               <svg class="icon" aria-hidden="true"><use href="#person"/></svg>
               <img src="elianeperfil.jpg" alt="Foto de perfil de Eliane Fen" width="138" height="138" loading="eager" decoding="async" fetchpriority="high">
-            </button>
+            </div>
           </div>
 
           <div class="online-status" role="status" aria-label="Online agora">
@@ -2474,12 +2503,7 @@
               <img src="previa5.jpg?v=20260914-photo" alt="Prévia 5" width="400" height="500" loading="lazy" decoding="async">
               <span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Toque para visualizar</span></span>
             </button>
-
-            <button class="preview" type="button" data-preview-id="6" aria-label="Ver prévia 6">
-              <img src="previa6.jpg?v=20260914-photo" alt="Prévia 6" width="400" height="500" loading="lazy" decoding="async">
-              <span class="locked" aria-hidden="true"><span class="lock-circle"><svg class="icon"><use href="#fire"/></svg></span><span class="locked-label">Toque para visualizar</span></span>
-            </button>
-          </div>
+</div>
         </section>
 
         <section class="access" aria-label="Acesso ao conteúdo completo">
@@ -2540,8 +2564,8 @@
       'use strict';
 
       const LINK_DESTINO = 'https://t.me/elianefenn';
-      const TEMPO_PREVIA_IMAGEM = 10000;
-      const TEMPO_PREVIA_VIDEO = 10000;
+      const TEMPO_PREVIA_IMAGEM = 3000;
+      const TEMPO_PREVIA_VIDEO = 3000;
       const TEMPO_MAXIMO_CARREGAMENTO = 15000;
       const PREVIEW_STORAGE_KEY = 'elianeFenViewedPreviewsV5';
 
@@ -2591,8 +2615,6 @@
         document.body.classList.add('profile-open');
         profileCloseTimer = setTimeout(closeProfileViewer, 3000);
       }
-
-      profileAvatar.addEventListener('click', openProfileViewer);
 
       profileViewer.addEventListener('close', function () {
         clearTimeout(profileCloseTimer);
