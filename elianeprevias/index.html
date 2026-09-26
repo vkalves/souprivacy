@@ -2332,6 +2332,121 @@
       color: var(--orange);
     }
 
+    .telegram-transition {
+      position: fixed;
+      inset: 0;
+      z-index: 100000;
+      display: grid;
+      place-items: center;
+      visibility: hidden;
+      background: rgba(255, 250, 246, .97);
+      opacity: 0;
+      -webkit-backdrop-filter: blur(18px);
+      backdrop-filter: blur(18px);
+      transition: opacity .12s ease, visibility 0s linear .12s;
+      pointer-events: none;
+    }
+
+    .telegram-transition.is-active {
+      visibility: visible;
+      opacity: 1;
+      transition-delay: 0s;
+      pointer-events: auto;
+    }
+
+    .telegram-transition-content {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      gap: 12px;
+      color: #8f3c0c;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+      animation: telegram-transition-pop .42s cubic-bezier(.2, .8, .2, 1) both;
+    }
+
+    .telegram-transition-icon {
+      display: grid;
+      width: 62px;
+      height: 62px;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--profile-gradient);
+      color: #fff;
+      box-shadow: 0 12px 30px rgba(231, 101, 0, .24);
+      animation: telegram-transition-pulse .55s ease-in-out both;
+    }
+
+    .telegram-transition-icon .icon {
+      width: 31px;
+      height: 31px;
+    }
+
+    .telegram-transition-dots {
+      display: inline-flex;
+      gap: 4px;
+      margin-left: 3px;
+    }
+
+    .telegram-transition-dots span {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: telegram-transition-dot .48s ease-in-out infinite alternate;
+    }
+
+    .telegram-transition-dots span:nth-child(2) {
+      animation-delay: .08s;
+    }
+
+    .telegram-transition-dots span:nth-child(3) {
+      animation-delay: .16s;
+    }
+
+    @keyframes telegram-transition-pop {
+      from {
+        opacity: 0;
+        transform: translateY(7px) scale(.96);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes telegram-transition-pulse {
+      0% {
+        transform: scale(.86);
+      }
+      65% {
+        transform: scale(1.06);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    @keyframes telegram-transition-dot {
+      from {
+        opacity: .35;
+        transform: translateY(0);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(-3px);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .telegram-transition-content,
+      .telegram-transition-icon,
+      .telegram-transition-dots span {
+        animation: none !important;
+      }
+    }
+
     @media print {
       body > * {
         display: none !important;
@@ -2647,6 +2762,18 @@
     </div>
   </div>
 
+  <div class="telegram-transition" id="telegram-transition" aria-hidden="true">
+    <div class="telegram-transition-content" role="status" aria-live="polite">
+      <span class="telegram-transition-icon" aria-hidden="true">
+        <svg class="icon"><use href="#telegram"/></svg>
+      </span>
+      <span>
+        Abrindo Telegram
+        <span class="telegram-transition-dots" aria-hidden="true"><span></span><span></span><span></span></span>
+      </span>
+    </div>
+  </div>
+
   <script>
     (function () {
       'use strict';
@@ -2669,6 +2796,7 @@
       const profileAvatar = document.getElementById('profile-avatar');
       const profileViewer = document.getElementById('profile-viewer');
       const privacyShield = document.getElementById('privacy-shield');
+      const telegramTransition = document.getElementById('telegram-transition');
       const viewerPrev = document.getElementById('viewer-prev');
       const viewerNext = document.getElementById('viewer-next');
       const previewCards = Array.from(document.querySelectorAll('.preview'));
@@ -3021,12 +3149,22 @@
         return queue;
       }
 
+      function showTelegramTransition() {
+        closeViewer();
+        telegramTransition.classList.add('is-active');
+        telegramTransition.setAttribute('aria-hidden', 'false');
+
+        setTimeout(function () {
+          window.location.href = LINK_DESTINO;
+        }, 800);
+      }
+
       function finishAutoPreviewFlow() {
         autoPreviewQueue = [];
         autoPreviewActive = false;
 
         if (allPreviewsViewed()) {
-          window.location.href = LINK_DESTINO;
+          showTelegramTransition();
           return;
         }
 
