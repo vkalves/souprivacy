@@ -2681,6 +2681,8 @@
       let mainButtonVisible = false;
       let videoPlayCount = 0;
       let profileCloseTimer = 0;
+      let autoPreviewQueue = [];
+      let autoPreviewActive = false;
 
       function closeProfileViewer() {
         clearTimeout(profileCloseTimer);
@@ -2946,6 +2948,8 @@
         videoPlayCount = 0;
         currentPreviewIndex = -1;
         sessionPreviewIds.clear();
+        autoPreviewQueue = [];
+        autoPreviewActive = false;
         viewerPrev.hidden = true;
         viewerNext.hidden = true;
       }
@@ -2986,6 +2990,71 @@
         closeTimer = setTimeout(closeViewer, wait);
       }
 
+      function allPreviewsViewed() {
+        return previewCards.every(function (card) {
+          return viewedPreviews.has(String(card.dataset.previewId));
+        });
+      }
+
+      function buildAutoPreviewQueue(startCard) {
+        const startIndex = previewCards.indexOf(startCard);
+        const queue = [];
+
+        if (startIndex === -1) return queue;
+
+        queue.push(startCard);
+
+        for (let index = startIndex - 1; index >= 0; index -= 1) {
+          const card = previewCards[index];
+          if (!viewedPreviews.has(String(card.dataset.previewId))) {
+            queue.push(card);
+          }
+        }
+
+        for (let index = startIndex + 1; index < previewCards.length; index += 1) {
+          const card = previewCards[index];
+          if (!viewedPreviews.has(String(card.dataset.previewId))) {
+            queue.push(card);
+          }
+        }
+
+        return queue;
+      }
+
+      function finishAutoPreviewFlow() {
+        autoPreviewQueue = [];
+        autoPreviewActive = false;
+
+        if (allPreviewsViewed()) {
+          window.location.href = LINK_DESTINO;
+          return;
+        }
+
+        closeViewer();
+      }
+
+      function advanceAutoPreview() {
+        clearTimeout(closeTimer);
+        closeTimer = 0;
+
+        if (!autoPreviewActive) {
+          closeViewer();
+          return;
+        }
+
+        while (autoPreviewQueue.length > 0) {
+          const nextCard = autoPreviewQueue.shift();
+          const nextId = String(nextCard.dataset.previewId);
+
+          if (!viewedPreviews.has(nextId)) {
+            showPreviewCard(nextCard, true);
+            return;
+          }
+        }
+
+        finishAutoPreviewFlow();
+      }
+
       function loadImagePreview(card, source, id) {
         viewerVideo.hidden = true;
         viewerImage.hidden = false;
@@ -2999,7 +3068,7 @@
           viewerImage.style.visibility = 'visible';
           viewerMessage.textContent = 'Aproveite a prévia ✨';
           markPreviewAsViewed(card);
-          closeTimer = setTimeout(closeViewer, TEMPO_PREVIA_IMAGEM);
+          closeTimer = setTimeout(advanceAutoPreview, TEMPO_PREVIA_IMAGEM);
         };
 
         viewerImage.onerror = function () {
@@ -3056,11 +3125,11 @@
                 viewerVideo.currentTime = 0;
                 playVideoSafely();
               } else {
-                closeViewer();
+                advanceAutoPreview();
               }
             };
           } else {
-            closeTimer = setTimeout(closeViewer, TEMPO_PREVIA_VIDEO);
+            closeTimer = setTimeout(advanceAutoPreview, TEMPO_PREVIA_VIDEO);
           }
 
           playVideoSafely();
@@ -3092,7 +3161,7 @@
       }
 
       function updateViewerNavigation() {
-        if (!viewer.hasAttribute('open') || currentPreviewIndex < 0) {
+        if (autoPreviewActive || !viewer.hasAttribute('open') || currentPreviewIndex < 0) {
           viewerPrev.hidden = true;
           viewerNext.hidden = true;
           return;
@@ -3198,7 +3267,11 @@
             return;
           }
 
-          showPreviewCard(card, false);
+          autoPreviewQueue = buildAutoPreviewQueue(card);
+          autoPreviewActive = true;
+
+          const firstCard = autoPreviewQueue.shift();
+          showPreviewCard(firstCard, false);
         });
       });
 
