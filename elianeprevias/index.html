@@ -2368,7 +2368,7 @@
     }
 
     .telegram-transition.is-active::before {
-      animation: telegram-transition-glow 1.05s ease-out both;
+      animation: telegram-transition-glow .58s ease-out both;
     }
 
     .telegram-transition-content {
@@ -2402,11 +2402,11 @@
     }
 
     .telegram-transition-ring-a {
-      animation: telegram-transition-ring .72s ease-out .05s both;
+      animation: telegram-transition-ring .46s ease-out .03s both;
     }
 
     .telegram-transition-ring-b {
-      animation: telegram-transition-ring .72s ease-out .27s both;
+      animation: telegram-transition-ring .46s ease-out .14s both;
     }
 
     .telegram-transition-icon {
@@ -2420,13 +2420,13 @@
       background: var(--profile-gradient);
       color: #fff;
       box-shadow: 0 12px 30px rgba(231, 101, 0, .26);
-      animation: telegram-transition-icon-pop .44s cubic-bezier(.18, .89, .32, 1.28) both;
+      animation: telegram-transition-icon-pop .3s cubic-bezier(.18, .89, .32, 1.28) both;
     }
 
     .telegram-transition-icon .icon {
       width: 30px;
       height: 30px;
-      animation: telegram-transition-send .82s cubic-bezier(.22, .61, .36, 1) .12s both;
+      animation: telegram-transition-send .44s cubic-bezier(.22, .61, .36, 1) .07s both;
     }
 
     .telegram-transition-spark {
@@ -2442,7 +2442,7 @@
     .telegram-transition-spark-a {
       top: 8px;
       right: 8px;
-      animation: telegram-transition-spark-a .62s ease-out .18s both;
+      animation: telegram-transition-spark-a .38s ease-out .1s both;
     }
 
     .telegram-transition-spark-b {
@@ -2450,13 +2450,13 @@
       left: 5px;
       width: 4px;
       height: 4px;
-      animation: telegram-transition-spark-b .62s ease-out .26s both;
+      animation: telegram-transition-spark-b .38s ease-out .15s both;
     }
 
     .telegram-transition-label {
       display: block;
       letter-spacing: .01em;
-      animation: telegram-transition-label .4s ease-out .08s both;
+      animation: telegram-transition-label .26s ease-out .04s both;
     }
 
     .telegram-transition-progress {
@@ -2477,7 +2477,7 @@
       background: var(--profile-gradient);
       transform: scaleX(0);
       transform-origin: left center;
-      animation: telegram-transition-progress 1.02s cubic-bezier(.3, .65, .2, 1) .04s both;
+      animation: telegram-transition-progress .52s cubic-bezier(.3, .65, .2, 1) .02s both;
     }
 
     @keyframes telegram-transition-pop {
@@ -3343,7 +3343,7 @@
 
         setTimeout(function () {
           window.location.href = LINK_DESTINO;
-        }, 1100);
+        }, 600);
       }
 
       function finishAutoPreviewFlow() {
