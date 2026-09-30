@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/painel", "destination": "/links/index.html" },
+    { "source": "/painel/", "destination": "/links/index.html" },
+    { "source": "/:slug((?!painel$|links$|api$|supabase$|tests$|chamada$|elianefen$|elianeprevias$|biancarossi$|becasantos$|admin$|login$|cadastro$|www$)[a-z0-9][a-z0-9-]{1,30}[a-z0-9])", "destination": "/links/profile.html" },
+    { "source": "/:slug((?!painel/|links/|api/|supabase/|tests/|chamada/|elianefen/|elianeprevias/|biancarossi/|becasantos/|admin/|login/|cadastro/|www/)[a-z0-9][a-z0-9-]{1,30}[a-z0-9])/", "destination": "/links/profile.html" }
+  ]
+}
