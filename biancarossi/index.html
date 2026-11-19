@@ -37,11 +37,13 @@
     .media-status{position:absolute;inset:0;z-index:12;display:none;place-items:center;background:rgba(20,18,16,.46);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);color:#fff;text-align:center;padding:24px}.media-status.show{display:grid}.media-box{display:flex;flex-direction:column;align-items:center;gap:12px;padding:18px 20px;border-radius:20px;background:rgba(20,18,16,.48);border:1px solid rgba(255,255,255,.14);font-size:13px;font-weight:700}.media-spinner{width:24px;height:24px;border-radius:50%;border:3px solid rgba(255,255,255,.24);border-top-color:#fff;animation:mediaSpin .75s linear infinite}@keyframes mediaSpin{to{transform:rotate(360deg)}}
     .pause-screen{position:absolute;inset:0;z-index:11;display:none;place-items:center;background:radial-gradient(circle at 50% 36%,rgba(255,152,0,.12),transparent 34%),rgba(18,17,16,.90);color:#fff;text-align:center;padding:24px}.pause-screen.show{display:grid}.pause-card{display:flex;flex-direction:column;align-items:center;gap:10px}.pause-icon{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.14);box-shadow:0 12px 34px rgba(0,0,0,.22)}.pause-icon svg{width:28px;height:28px;fill:#fff}.pause-title{font-size:20px;font-weight:700}.pause-sub{max-width:260px;font-size:13px;line-height:1.5;color:rgba(255,255,255,.72)}
     .stage{position:relative;z-index:6;height:calc(100% - 72px);display:flex;flex-direction:column;align-items:center;padding:34px 32px calc(138px + env(safe-area-inset-bottom));text-align:center}
-    .phone[data-state="incoming"] .stage{padding-top:6px;padding-bottom:40px}
-    .eyebrow{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid rgba(187,82,0,.10);border-radius:999px;background:rgba(255,255,255,.82);font-size:11px;font-weight:600;color:var(--orange);box-shadow:0 8px 24px rgba(112,66,21,.06);transition:background .28s ease,border-color .28s ease,color .28s ease,box-shadow .28s ease}
-    .phone[data-state="incoming"] .eyebrow{padding:4px 10px;gap:5.5px;border-color:rgba(33,166,84,.22);background:rgba(232,249,238,.90);color:#16803c;font-size:11px;font-weight:600;letter-spacing:-.01em;box-shadow:0 4px 14px rgba(21,128,61,.06);animation:introBadge .75s .10s cubic-bezier(.22,1,.36,1) both}@keyframes introBadge{from{opacity:0;transform:translateY(8px) scale(.95)}to{opacity:1;transform:none}}
+    .phone[data-state="incoming"] .stage,.phone[data-state="connecting"]:not(.recovering) .stage{padding-top:6px;padding-bottom:40px}
+    .eyebrow{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid rgba(187,82,0,.10);border-radius:999px;background:rgba(255,255,255,.82);font-size:11px;font-weight:600;color:var(--orange);box-shadow:0 8px 24px rgba(112,66,21,.06)}
+    .phone[data-state="incoming"] .eyebrow,.phone[data-state="connecting"]:not(.recovering) .eyebrow{padding:4px 10px;gap:5.5px;border-color:rgba(114,116,120,.22);background:rgba(235,233,230,.94);color:#6e7074;font-size:11px;font-weight:600;letter-spacing:-.01em;box-shadow:none;animation:none}
+    .phone[data-state="incoming"].online-ready .eyebrow,.phone[data-state="connecting"]:not(.recovering).online-ready .eyebrow{border-color:rgba(33,166,84,.22);background:rgba(232,249,238,.90);color:#16803c;box-shadow:0 4px 14px rgba(21,128,61,.06)}
     .eyebrow-dot{width:6px;height:6px;border-radius:50%;background:linear-gradient(135deg,var(--orange-1),var(--orange-3));box-shadow:0 0 0 4px rgba(255,152,0,.10)}
-    .phone[data-state="incoming"] .eyebrow-dot{width:6px;height:6px;background:#21a654;box-shadow:0 0 0 3px rgba(33,166,84,.14);animation:onlinePing 1.9s ease-out infinite}@keyframes onlinePing{0%,100%{box-shadow:0 0 0 2.5px rgba(33,166,84,.14)}50%{box-shadow:0 0 0 6px rgba(33,166,84,0)}}
+    .phone[data-state="incoming"] .eyebrow-dot,.phone[data-state="connecting"]:not(.recovering) .eyebrow-dot{width:6px;height:6px;background:#8e9095;box-shadow:none;animation:none}
+    .phone[data-state="incoming"].online-ready .eyebrow-dot,.phone[data-state="connecting"]:not(.recovering).online-ready .eyebrow-dot{background:#21a654;box-shadow:0 0 0 3px rgba(33,166,84,.14);animation:onlinePing 1.9s ease-out infinite}@keyframes onlinePing{0%,100%{box-shadow:0 0 0 2.5px rgba(33,166,84,.14)}50%{box-shadow:0 0 0 6px rgba(33,166,84,0)}}
     .avatar-wrap{position:relative;width:174px;height:174px;margin:28px auto 24px}
     .avatar-wrap::before,.avatar-ring,.avatar-ring::after{display:none}
     .avatar{position:absolute;inset:10px;border-radius:50%;overflow:hidden;background:#f0ece8;box-shadow:0 18px 45px rgba(83,49,18,.16),0 0 0 6px rgba(255,255,255,.82)}
@@ -53,12 +55,14 @@
     .phone[data-state="in-call"].controls-hidden .call-timer{opacity:0;transform:translateY(-5px) scale(.96);visibility:hidden;transition:opacity .22s ease,transform .24s ease,visibility 0s linear .22s}
     .timer-live-dot{width:6px;height:6px;border-radius:50%;background:rgba(198,243,208,.92);box-shadow:0 0 0 3px rgba(198,243,208,.09);flex:0 0 auto}
     .timer-value{min-width:31px;text-align:center;line-height:1}
-    .connecting-card{display:none;margin-top:24px;padding:11px 15px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.78);color:var(--muted);font-size:13px;box-shadow:0 10px 24px rgba(41,43,46,.04)}.phone[data-state="connecting"] .connecting-card{display:block;animation:connectIn .45s cubic-bezier(.22,1,.36,1) both}@keyframes connectIn{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
-    .phone.recovering .connecting-card{display:inline-flex!important;align-items:center;gap:9px;color:var(--orange);font-weight:700;background:rgba(255,255,255,.92)}.phone.recovering .connecting-card::before{content:"";width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,152,0,.20);border-top-color:var(--orange-2);animation:recoverySpin .7s linear infinite}.phone.recovering .controls{pointer-events:none;opacity:.58;filter:saturate(.7)}.phone.recovering .stage{animation:recoveryBreath 1.25s ease-in-out infinite}@keyframes recoverySpin{to{transform:rotate(360deg)}}@keyframes recoveryBreath{0%,100%{opacity:1}50%{opacity:.72}}
+    .connecting-card{display:none;margin-top:26px;padding:12px 22px;border:1px solid rgba(255,152,0,.25);border-radius:999px;background:rgba(255,255,255,.92);color:var(--orange);font-size:14px;font-weight:600;letter-spacing:-.01em;box-shadow:0 12px 28px rgba(187,82,0,.10);align-items:center;justify-content:center;gap:10px}.phone[data-state="connecting"] .connecting-card{display:inline-flex;animation:connectIn .35s cubic-bezier(.22,1,.36,1) both}@keyframes connectIn{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:none}}
+    .calling-spinner{width:16px;height:16px;border-radius:50%;border:2.2px solid rgba(255,152,0,.22);border-top-color:var(--orange-1);animation:recoverySpin .75s linear infinite;flex:0 0 auto}
+    .calling-dots{display:inline-flex;margin-left:1px}.calling-dots span{animation:callingDot 1.2s infinite ease-in-out}.calling-dots span:nth-child(2){animation-delay:.2s}.calling-dots span:nth-child(3){animation-delay:.4s}@keyframes callingDot{0%,80%,100%{opacity:.22}40%{opacity:1}}
+    .phone.recovering .connecting-card{display:inline-flex!important;align-items:center;gap:9px;color:var(--orange);font-weight:700;background:rgba(255,255,255,.92)}.phone.recovering .controls{pointer-events:none;opacity:.58;filter:saturate(.7)}.phone.recovering .stage{animation:recoveryBreath 1.25s ease-in-out infinite}@keyframes recoverySpin{to{transform:rotate(360deg)}}@keyframes recoveryBreath{0%,100%{opacity:1}50%{opacity:.72}}
     .phone[data-state="in-call"].has-remote .stage{align-items:flex-start;text-align:left;padding-top:18px;color:#fff;pointer-events:none}.phone[data-state="in-call"].has-remote .eyebrow,.phone[data-state="in-call"].has-remote .avatar-wrap{display:none}.phone[data-state="in-call"].has-remote .name-line{justify-content:flex-start}.phone[data-state="in-call"].has-remote .name{font-size:27px;text-shadow:0 2px 12px rgba(0,0,0,.28)}.phone[data-state="in-call"] .substatus{display:none}
     /* HUD minimalista da chamada: nome/verificado + qualidade sempre visível */
     .call-hud{position:absolute;top:calc(16px + env(safe-area-inset-top));left:14px;z-index:60;display:none;align-items:center;gap:7px;max-width:calc(100% - 64px);pointer-events:none}
-    .phone[data-state="connecting"] .call-hud,.phone[data-state="in-call"] .call-hud{display:flex}
+    .phone[data-state="in-call"] .call-hud{display:flex}
     .hud-identity,.quality-indicator{height:30px;display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.22);background:rgba(24,24,24,.30);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 5px 16px rgba(0,0,0,.08);color:rgba(255,255,255,.92)}
     .hud-identity{gap:5px;min-width:0;padding:0 9px;border-radius:11px}
     .hud-name{max-width:108px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;font-weight:600;letter-spacing:-.01em}
@@ -70,19 +74,29 @@
     .quality-indicator[data-quality="high"]{color:#dff7e7}.quality-indicator[data-quality="high"] .quality-bars span{opacity:.92}
     .quality-indicator[data-quality="medium"]{color:#fff0c9;background:rgba(91,68,20,.31);border-color:rgba(255,231,174,.22)}.quality-indicator[data-quality="medium"] .quality-bars span:nth-child(-n+2){opacity:.90}.quality-indicator[data-quality="medium"] .quality-bars span:nth-child(3){opacity:.20}
     .quality-indicator[data-quality="low"]{color:#ffe3cf;background:rgba(94,48,18,.34);border-color:rgba(255,214,183,.24)}.quality-indicator[data-quality="low"] .quality-bars span:nth-child(1){opacity:.92}.quality-indicator[data-quality="low"] .quality-bars span:nth-child(n+2){opacity:.20}
-    .phone[data-state="connecting"] .stage .name-line,.phone[data-state="in-call"] .stage .name-line{display:none}
-    .phone[data-state="connecting"] .topbar,.phone[data-state="in-call"] .topbar{opacity:0;pointer-events:none}
+    .phone[data-state="in-call"] .stage .name-line{display:none}
+    .phone[data-state="in-call"] .topbar{opacity:0;pointer-events:none}
     .phone[data-state="in-call"].has-remote .stage{padding-top:66px}
-    .self-cam{position:absolute;top:calc(62px + env(safe-area-inset-top));right:14px;width:94px;height:136px;border-radius:18px;overflow:hidden;z-index:15;display:none;background:#e7e2dd;border:1px solid rgba(255,255,255,.72);box-shadow:0 12px 28px rgba(0,0,0,.18)}.phone[data-state="connecting"] .self-cam,.phone[data-state="in-call"] .self-cam{display:block;animation:selfIn .45s cubic-bezier(.22,1,.36,1) both}@keyframes selfIn{from{opacity:0;transform:translateY(-8px) scale(.88)}to{opacity:1;transform:none}}.self-video{width:100%;height:100%;display:block;object-fit:cover;background:#111}.self-placeholder{display:none;position:absolute;inset:0;place-items:center;background:#eee8e1;color:#958d86}.self-placeholder svg{width:28px;height:28px;fill:currentColor}.self-cam.no-video .self-video,.self-cam.off .self-video{display:none}.self-cam.no-video .self-placeholder,.self-cam.off .self-placeholder{display:grid}
-    .flip-cam{position:absolute;top:calc(16px + env(safe-area-inset-top));right:14px;left:auto;z-index:61;width:30px;height:30px;border:1px solid rgba(255,255,255,.20);border-radius:10px;display:none;place-items:center;background:rgba(24,24,24,.26);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:rgba(255,255,255,.88);box-shadow:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .22s ease,transform .24s ease,visibility 0s linear}.phone[data-state="connecting"] .flip-cam,.phone[data-state="in-call"] .flip-cam{display:grid}.flip-cam svg{width:15px;height:15px;fill:currentColor}.flip-cam.spin svg{animation:flipspin .5s ease}@keyframes flipspin{to{transform:rotate(360deg)}}
+    .self-cam{position:absolute;top:calc(62px + env(safe-area-inset-top));right:14px;width:94px;height:136px;border-radius:18px;overflow:hidden;z-index:15;display:none;background:#e7e2dd;border:1px solid rgba(255,255,255,.72);box-shadow:0 12px 28px rgba(0,0,0,.18)}.phone[data-state="in-call"] .self-cam{display:block;animation:selfIn .45s cubic-bezier(.22,1,.36,1) both}@keyframes selfIn{from{opacity:0;transform:translateY(-8px) scale(.88)}to{opacity:1;transform:none}}.self-video{width:100%;height:100%;display:block;object-fit:cover;background:#111}.self-placeholder{display:none;position:absolute;inset:0;place-items:center;background:#eee8e1;color:#958d86}.self-placeholder svg{width:28px;height:28px;fill:currentColor}.self-cam.no-video .self-video,.self-cam.off .self-video{display:none}.self-cam.no-video .self-placeholder,.self-cam.off .self-placeholder{display:grid}
+    .flip-cam{position:absolute;top:calc(16px + env(safe-area-inset-top));right:14px;left:auto;z-index:61;width:30px;height:30px;border:1px solid rgba(255,255,255,.20);border-radius:10px;display:none;place-items:center;background:rgba(24,24,24,.26);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:rgba(255,255,255,.88);box-shadow:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .22s ease,transform .24s ease,visibility 0s linear}.phone[data-state="in-call"] .flip-cam{display:grid}.flip-cam svg{width:15px;height:15px;fill:currentColor}.flip-cam.spin svg{animation:flipspin .5s ease}@keyframes flipspin{to{transform:rotate(360deg)}}
+    .cam-prompt{position:absolute;left:18px;right:18px;bottom:calc(114px + env(safe-area-inset-bottom));z-index:45;display:none;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:22px;background:rgba(24,22,20,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.18);box-shadow:0 16px 40px rgba(0,0,0,.28);color:#fff;animation:connectIn .32s cubic-bezier(.22,1,.36,1) both}
+    .phone[data-state="in-call"] .cam-prompt.show{display:flex}
+    .cam-prompt-label{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:700;letter-spacing:-.01em}
+    .cam-prompt-icon{width:32px;height:32px;border-radius:50%;background:rgba(255,152,0,.20);color:var(--orange-3);display:grid;place-items:center;flex:0 0 auto}
+    .cam-prompt-icon svg{width:17px;height:17px;fill:currentColor}
+    .cam-prompt-actions{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+    .cam-opt{height:34px;padding:0 15px;border-radius:999px;border:0;font-size:12px;font-weight:700;cursor:pointer;transition:transform .14s ease,opacity .18s ease}
+    .cam-opt:active{transform:scale(.95)}
+    .cam-opt.yes{background:linear-gradient(135deg,var(--orange-1),var(--orange-2));color:#fff;box-shadow:0 6px 16px rgba(255,124,0,.28)}
+    .cam-opt.no{background:rgba(255,255,255,.14);color:rgba(255,255,255,.90);border:1px solid rgba(255,255,255,.16)}
     .controls{position:absolute;left:18px;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:30;border:1px solid rgba(238,236,233,.86);border-radius:30px;background:rgba(255,255,255,.90);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 20px 55px rgba(62,40,22,.13);padding:14px;transition:opacity .25s ease,filter .25s ease,transform .28s ease}
-    .phone[data-state="incoming"] .controls{display:none}
+    .phone[data-state="incoming"] .controls,.phone[data-state="connecting"]:not(.recovering) .controls{display:none}
     .phone[data-state="in-call"].controls-hidden .controls{opacity:0;transform:translateY(16px);pointer-events:none;filter:saturate(.92)}
     .phone[data-state="in-call"].controls-hidden .flip-cam{opacity:0;transform:translateY(-5px) scale(.92);visibility:hidden;pointer-events:none;transition:opacity .22s ease,transform .24s ease,visibility 0s linear .22s}
     .incoming-controls,.incall-controls,.ended-controls{display:none}
     .phone[data-state="incoming"] .incoming-controls{display:flex;justify-content:center;align-items:center;margin-top:26px;animation:controlsEntrance .82s .52s cubic-bezier(.16,1,.3,1) both}@keyframes controlsEntrance{0%{opacity:0;transform:translateY(22px) scale(.9)}70%{opacity:1;transform:translateY(-2px) scale(1.02)}100%{opacity:1;transform:none}}
-    .phone[data-state="connecting"] .incall-controls,.phone[data-state="in-call"] .incall-controls{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.phone[data-state="ended"] .ended-controls{display:block}
-    .phone.one-time-ended .controls,.phone.one-time-ended .sound-toggle,.phone.one-time-ended .flip-cam,.phone.one-time-ended .self-cam{display:none!important}.phone.one-time-ended .stage{padding-bottom:40px}
+    .phone[data-state="in-call"] .incall-controls{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.phone[data-state="ended"] .ended-controls{display:block}
+    .phone.one-time-ended .controls,.phone.one-time-ended .sound-toggle,.phone.one-time-ended .flip-cam,.phone.one-time-ended .self-cam,.phone.one-time-ended .cam-prompt{display:none!important}.phone.one-time-ended .stage{padding-bottom:40px}
     .action{position:relative;isolation:isolate;overflow:hidden;border:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .16s ease,filter .2s ease,box-shadow .2s ease}.action:active{transform:scale(.95)}.decline{display:none!important}
     .accept{width:72px;height:72px;min-height:72px;border-radius:50%;padding:0;background:linear-gradient(135deg,var(--orange-1),var(--orange-2) 55%,var(--orange-3));color:#fff;box-shadow:0 14px 30px rgba(255,137,0,.30),0 0 0 7px rgba(255,152,0,.12)}.accept svg{width:28px;height:28px;fill:currentColor}.accept span{display:none}.phone[data-state="incoming"] .accept{animation:acceptCall 1.75s .9s cubic-bezier(.4,0,.2,1) infinite}@keyframes acceptCall{0%,100%{transform:translateY(0) scale(1);box-shadow:0 14px 30px rgba(255,137,0,.26),0 0 0 7px rgba(255,152,0,.11)}45%{transform:translateY(-3px) scale(1.03);box-shadow:0 18px 38px rgba(255,137,0,.40),0 0 0 10px rgba(255,152,0,.16)}60%{transform:translateY(-1px) scale(1.01);box-shadow:0 15px 32px rgba(255,137,0,.32),0 0 0 8px rgba(255,152,0,.13)}}
     .mini-action{min-height:62px;border:0;border-radius:18px;background:#f6f3f0;color:var(--ink);display:flex;flex-direction:column;gap:5px;align-items:center;justify-content:center;cursor:pointer;font-size:10px;font-weight:600}.mini-action svg{width:19px;height:19px;fill:currentColor}.mini-action.off{background:#ece7e2;color:#9c928a}.mini-action.end{background:#fff0ee;color:var(--danger)}.mini-action.chat-active{background:#fff3e6;color:var(--orange)}
@@ -90,7 +104,7 @@
     .sound-toggle{display:none!important}
     .chat-panel{position:absolute;left:12px;right:12px;bottom:calc(98px + env(safe-area-inset-bottom));z-index:40;height:min(410px,58%);display:flex;flex-direction:column;border-radius:26px;background:rgba(255,255,255,.96);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid rgba(238,236,233,.92);box-shadow:0 24px 70px rgba(20,15,10,.26);transform:translateY(calc(100% + 130px));opacity:0;pointer-events:none;transition:transform .42s cubic-bezier(.16,1,.3,1),opacity .25s ease}.chat-panel.open{transform:translateY(0);opacity:1;pointer-events:auto}.chat-head{display:flex;align-items:center;gap:10px;padding:14px 14px 12px;border-bottom:1px solid var(--line)}.chat-avatar{width:36px;height:36px;border-radius:50%;overflow:hidden;background:#eee}.chat-avatar img{width:100%;height:100%;object-fit:cover}.chat-meta{flex:1;min-width:0}.chat-name{font-size:14px;font-weight:700}.chat-status{font-size:11px;color:#8c8986;margin-top:1px}.chat-close{width:34px;height:34px;border:0;border-radius:50%;background:#f5f2ef;color:#666;display:grid;place-items:center;cursor:pointer}.chat-close svg{width:18px;height:18px;fill:currentColor}.chat-messages{flex:1;overflow:auto;padding:16px 14px;display:flex;flex-direction:column;gap:10px}.bubble{max-width:82%;padding:10px 12px;border-radius:16px;font-size:13px;line-height:1.4;animation:bubbleIn .35s cubic-bezier(.22,1,.36,1) both}.bubble.them{align-self:flex-start;background:#f3f0ed;color:#343434;border-bottom-left-radius:6px}.bubble.me{align-self:flex-end;background:linear-gradient(110deg,var(--orange-1),var(--orange-2));color:#fff;border-bottom-right-radius:6px}.bubble-time{display:block;margin-top:4px;font-size:9px;opacity:.62;text-align:right}@keyframes bubbleIn{from{opacity:0;transform:translateY(7px) scale(.97)}to{opacity:1;transform:none}}
     .chat-countdown{display:none;margin:0 14px 10px;padding:9px 11px;border-radius:14px;background:#fff7ee;color:var(--orange);font-size:11px;font-weight:700;text-align:center}.chat-countdown.show{display:block}.chat-compose{display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}.chat-input{flex:1;min-width:0;height:42px;border:1px solid var(--line);border-radius:999px;padding:0 14px;background:#faf8f6;color:var(--ink)}.chat-send{width:42px;height:42px;border:0;border-radius:50%;display:grid;place-items:center;background:linear-gradient(110deg,var(--orange-1),var(--orange-2));color:#fff;cursor:pointer}.chat-send svg{width:18px;height:18px;fill:currentColor}
-    @media(max-height:700px){.stage{padding-top:18px}.phone[data-state="incoming"] .stage{padding-top:4px}.avatar-wrap{width:138px;height:138px;margin:20px auto 18px}.name{font-size:30px}.controls{bottom:calc(10px + env(safe-area-inset-bottom))}.topbar{padding-top:calc(12px + env(safe-area-inset-top))}.chat-panel{height:min(350px,56%)}}
+    @media(max-height:700px){.stage{padding-top:18px}.phone[data-state="incoming"] .stage,.phone[data-state="connecting"]:not(.recovering) .stage{padding-top:4px}.avatar-wrap{width:138px;height:138px;margin:20px auto 18px}.name{font-size:30px}.controls{bottom:calc(10px + env(safe-area-inset-bottom))}.topbar{padding-top:calc(12px + env(safe-area-inset-top))}.chat-panel{height:min(350px,56%)}}
   </style>
 </head>
 <body>
@@ -115,15 +129,26 @@
     </div>
     <div class="call-timer" id="timer" aria-label="Tempo de chamada"><span class="timer-live-dot" aria-hidden="true"></span><span class="timer-value" id="timerValue">00:00</span></div>
     <button class="flip-cam" id="flipBtn" aria-label="Virar câmera"><svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg></button>
-    <div class="self-cam" id="selfCam"><video class="self-video" id="selfVideo" playsinline webkit-playsinline autoplay muted></video><div class="self-placeholder"><svg viewBox="0 0 24 24"><path d="M18 10.5V7c0-.6-.4-1-1-1H9.8l8.2 8.2v-3.7l4 4v-11l-4 4zM3.3 2.8 2 4.1l2 2V17c0 .6.4 1 1 1h12c.14 0 .27-.03.4-.08L20.9 21l1.3-1.3L3.3 2.8z"/></svg></div></div>
+    <div class="self-cam off" id="selfCam"><video class="self-video" id="selfVideo" playsinline webkit-playsinline autoplay muted></video><div class="self-placeholder"><svg viewBox="0 0 24 24"><path d="M18 10.5V7c0-.6-.4-1-1-1H9.8l8.2 8.2v-3.7l4 4v-11l-4 4zM3.3 2.8 2 4.1l2 2V17c0 .6.4 1 1 1h12c.14 0 .27-.03.4-.08L20.9 21l1.3-1.3L3.3 2.8z"/></svg></div></div>
+
+    <div class="cam-prompt" id="camPrompt" role="dialog" aria-label="Ligar câmera">
+      <div class="cam-prompt-label">
+        <span class="cam-prompt-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.6-.4-1-1-1H4c-.6 0-1 .4-1 1v10c0 .6.4 1 1 1h12c.6 0 1-.4 1-1v-3.5l4 4v-11l-4 4z"/></svg></span>
+        <span>Ligar câmera</span>
+      </div>
+      <div class="cam-prompt-actions">
+        <button type="button" class="cam-opt yes" id="camYesBtn">Sim</button>
+        <button type="button" class="cam-opt no" id="camNoBtn">Não</button>
+      </div>
+    </div>
 
     <section class="stage">
-      <div class="eyebrow"><span class="eyebrow-dot"></span><span id="callType">online agora</span></div>
+      <div class="eyebrow"><span class="eyebrow-dot"></span><span id="callType">online agora pouco</span></div>
       <div class="avatar-wrap"><div class="avatar-ring"></div><div class="avatar"><img src="./biancap.png" alt="Bianca Rossi" data-profile-image><div class="avatar-fallback"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.4c-3.3 0-9.8 1.6-9.8 4.9v2.5h19.6v-2.5c0-3.3-6.5-4.9-9.8-4.9z"/></svg></div></div></div>
       <div class="name-line"><h1 class="name">Bianca Rossi</h1><span class="verified"><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"/></svg></span></div>
       <p class="substatus" id="subStatus">Disponível para chamada de vídeo privada.</p>
       <div class="incoming-controls"><button class="action decline" id="declineBtn" aria-hidden="true" tabindex="-1"><svg viewBox="0 0 24 24"><path d="M18.3 5.7a1 1 0 0 0-1.4 0L12 10.6 7.1 5.7A1 1 0 1 0 5.7 7.1L10.6 12l-4.9 4.9a1 1 0 1 0 1.4 1.4L12 13.4l4.9 4.9a1 1 0 0 0 1.4-1.4L13.4 12l4.9-4.9a1 1 0 0 0 0-1.4z"/></svg><span>Recusar</span></button><button class="action accept" id="acceptBtn" aria-label="Ligar agora"><svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.46.57 3.58a1 1 0 0 1-.25 1.01l-2.2 2.2z"/></svg><span>Ligar agora</span></button></div>
-      <div class="connecting-card" id="connectingCard">Conectando sua câmera com segurança…</div>
+      <div class="connecting-card" id="connectingCard"><span class="calling-spinner" aria-hidden="true"></span><span id="connectingText">chamando<span class="calling-dots"><span>.</span><span>.</span><span>.</span></span></span></div>
     </section>
 
     <aside class="chat-panel" id="chatPanel" aria-label="Chat da chamada">
@@ -136,7 +161,7 @@
     <div class="controls">
       <div class="incall-controls">
         <button class="mini-action" id="muteMicBtn"><svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/></svg><span>Áudio</span></button>
-        <button class="mini-action" id="videoBtn"><svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.6-.4-1-1-1H4c-.6 0-1 .4-1 1v10c0 .6.4 1 1 1h12c.6 0 1-.4 1-1v-3.5l4 4v-11l-4 4z"/></svg><span>Vídeo</span></button>
+        <button class="mini-action off" id="videoBtn"><svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.6-.4-1-1-1H4c-.6 0-1 .4-1 1v10c0 .6.4 1 1 1h12c.6 0 1-.4 1-1v-3.5l4 4v-11l-4 4z"/></svg><span>Vídeo</span></button>
         <button class="mini-action" id="chatBtn"><svg viewBox="0 0 24 24"><path d="M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8l-6 4V6a2 2 0 0 1 2-2zm2 5h12V7H6v2zm0 4h9v-2H6v2z"/></svg><span>Chat</span></button>
         <button class="mini-action end" id="endBtn"><svg viewBox="0 0 24 24"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.996.996 0 0 1 0-1.41C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg><span>Encerrar</span></button>
       </div>
@@ -145,11 +170,31 @@
   </main>
 
   <script>
-    const phone=document.querySelector('.phone'),callType=document.getElementById('callType'),subStatus=document.getElementById('subStatus'),timerEl=document.getElementById('timer'),timerValue=document.getElementById('timerValue'),acceptBtn=document.getElementById('acceptBtn'),declineBtn=document.getElementById('declineBtn'),endBtn=document.getElementById('endBtn'),restartBtn=document.getElementById('restartBtn'),soundToggle=document.getElementById('soundToggle'),muteMicBtn=document.getElementById('muteMicBtn'),videoBtn=document.getElementById('videoBtn'),chatBtn=document.getElementById('chatBtn'),flipBtn=document.getElementById('flipBtn'),remoteVideo=document.getElementById('remoteVideo'),selfVideo=document.getElementById('selfVideo'),selfCam=document.getElementById('selfCam'),avatarWrap=document.querySelector('.avatar-wrap'),connectingCard=document.getElementById('connectingCard'),mediaStatus=document.getElementById('mediaStatus'),mediaStatusText=document.getElementById('mediaStatusText'),pauseScreen=document.getElementById('pauseScreen'),chatPanel=document.getElementById('chatPanel'),chatClose=document.getElementById('chatClose'),chatMessages=document.getElementById('chatMessages'),chatCountdown=document.getElementById('chatCountdown'),chatStatus=document.getElementById('chatStatus'),chatForm=document.getElementById('chatForm'),chatInput=document.getElementById('chatInput'),qualityIndicator=document.getElementById('qualityIndicator'),qualityLabel=document.getElementById('qualityLabel'),controlsEl=document.querySelector('.controls');
+    const phone=document.querySelector('.phone'),callType=document.getElementById('callType'),subStatus=document.getElementById('subStatus'),timerEl=document.getElementById('timer'),timerValue=document.getElementById('timerValue'),acceptBtn=document.getElementById('acceptBtn'),declineBtn=document.getElementById('declineBtn'),endBtn=document.getElementById('endBtn'),restartBtn=document.getElementById('restartBtn'),soundToggle=document.getElementById('soundToggle'),muteMicBtn=document.getElementById('muteMicBtn'),videoBtn=document.getElementById('videoBtn'),chatBtn=document.getElementById('chatBtn'),flipBtn=document.getElementById('flipBtn'),remoteVideo=document.getElementById('remoteVideo'),selfVideo=document.getElementById('selfVideo'),selfCam=document.getElementById('selfCam'),camPrompt=document.getElementById('camPrompt'),camYesBtn=document.getElementById('camYesBtn'),camNoBtn=document.getElementById('camNoBtn'),avatarWrap=document.querySelector('.avatar-wrap'),connectingCard=document.getElementById('connectingCard'),mediaStatus=document.getElementById('mediaStatus'),mediaStatusText=document.getElementById('mediaStatusText'),pauseScreen=document.getElementById('pauseScreen'),chatPanel=document.getElementById('chatPanel'),chatClose=document.getElementById('chatClose'),chatMessages=document.getElementById('chatMessages'),chatCountdown=document.getElementById('chatCountdown'),chatStatus=document.getElementById('chatStatus'),chatForm=document.getElementById('chatForm'),chatInput=document.getElementById('chatInput'),qualityIndicator=document.getElementById('qualityIndicator'),qualityLabel=document.getElementById('qualityLabel'),controlsEl=document.querySelector('.controls');
     const CALL_SESSION_KEY='bianca-rossi-active-call-v3',CALL_USED_KEY='bianca-rossi-call-used-v1';
     const SEGMENTS=[['https://pub-9efda438f3c04a75b5f287dc64fdb9aa.r2.dev/IMG_1391.mp4']];
     const INTERMISSION_MS=20000,TRANSITION_RECOVERY_MS=5000;
-    let state='incoming',muted=false,ringing=false,ringTimer=null,vibTimer=null,callTimer=null,seconds=0,audioCtx=null,flipping=false,facingMode='user',localStream=null,jsMotion=[],recovering=false,segment=0,sourceIndex=0,remoteLoaded=false,retryTimer=null,remoteRetryCount=0,stallRecoveryTimer=null,transitionRecoveryTimer=null,stutterTimer=null,stutterRelease=null,stutterStarted=false,phase='video',intermissionEndsAt=0,countdownTimer=null,chatAutoMessageShown=false,qualityStartupUntil=0,controlsHideTimer=null;
+    let state='incoming',muted=false,ringing=false,ringTimer=null,vibTimer=null,callTimer=null,seconds=0,audioCtx=null,flipping=false,facingMode='user',localStream=null,jsMotion=[],recovering=false,segment=0,sourceIndex=0,remoteLoaded=false,retryTimer=null,remoteRetryCount=0,stallRecoveryTimer=null,transitionRecoveryTimer=null,stutterTimer=null,stutterRelease=null,stutterStarted=false,phase='video',intermissionEndsAt=0,countdownTimer=null,chatAutoMessageShown=false,qualityStartupUntil=0,controlsHideTimer=null,onlineStatusTimer=null,callingTimer=null;
+
+    function scheduleOnlineStatus(){
+      clearTimeout(onlineStatusTimer);
+      phone.classList.remove('online-ready');
+      callType.textContent='online agora pouco';
+      onlineStatusTimer=setTimeout(()=>{
+        onlineStatusTimer=null;
+        if(state==='incoming'||(state==='connecting'&&!recovering)){
+          phone.classList.add('online-ready');
+          callType.textContent='online agora';
+        }
+      },2000);
+    }
+    function setConnectingLabel(isCalling){
+      if(isCalling){
+        connectingCard.innerHTML='<span class="calling-spinner" aria-hidden="true"></span><span id="connectingText">chamando<span class="calling-dots"><span>.</span><span>.</span><span>.</span></span></span>';
+      }else{
+        connectingCard.textContent='Recuperando chamada…';
+      }
+    }
 
     const PROFILE_IMAGE_CANDIDATES=[
       './biancap.png','./biancap.jpg','./biancap.jpeg','./biancap.webp','./biancap',
@@ -214,18 +259,18 @@
     function fmt(n){return String(n).padStart(2,'0')}function renderTimer(){timerValue.textContent=fmt(Math.floor(seconds/60))+':'+fmt(seconds%60)}function startCallTimer(from=0){stopCallTimer();seconds=Math.max(0,Number(from)||0);renderTimer();callTimer=setInterval(()=>{seconds+=phone.classList.contains('controls-hidden')?2:1;renderTimer();saveCallSession()},1000)}function stopCallTimer(){if(callTimer){clearInterval(callTimer);callTimer=null}}
     function hasUsedCall(){try{return localStorage.getItem(CALL_USED_KEY)==='1'}catch(e){return false}}function markCallUsed(){try{localStorage.setItem(CALL_USED_KEY,'1')}catch(e){}}
     function getStoredCall(){try{const raw=sessionStorage.getItem(CALL_SESSION_KEY);if(!raw)return null;const d=JSON.parse(raw);return d&&d.active?d:null}catch(e){return null}}function clearCallSession(){try{sessionStorage.removeItem(CALL_SESSION_KEY)}catch(e){}}
-    function seedActiveCallSession(){try{sessionStorage.setItem(CALL_SESSION_KEY,JSON.stringify({active:true,seconds:0,segment:0,phase:'video',remoteTime:0,intermissionEndsAt:0,micOff:false,videoOff:false,facingMode:'user',savedAt:Date.now()}))}catch(e){}}
+    function seedActiveCallSession(){try{sessionStorage.setItem(CALL_SESSION_KEY,JSON.stringify({active:true,seconds:0,segment:0,phase:'video',remoteTime:0,intermissionEndsAt:0,micOff:false,videoOff:true,facingMode:'user',savedAt:Date.now()}))}catch(e){}}
     function saveCallSession(){if((state!=='in-call'&&!recovering)||phone.classList.contains('one-time-ended'))return;try{sessionStorage.setItem(CALL_SESSION_KEY,JSON.stringify({active:true,seconds,segment,phase,remoteTime:Number.isFinite(remoteVideo.currentTime)?remoteVideo.currentTime:0,intermissionEndsAt,micOff:muteMicBtn.classList.contains('off'),videoOff:videoBtn.classList.contains('off'),facingMode,savedAt:Date.now()}))}catch(e){}}
     function showUsedCallEnded(){cleanupActiveCall();phone.classList.add('one-time-ended');setState('ended');callType.textContent='Essa ligação terminou';subStatus.textContent='Essa chamada não está mais disponível.';timerValue.textContent='';hideMediaStatus();closeChat(true)}
     function updateMirror(){selfVideo.style.transform=facingMode==='user'?'scaleX(-1)':'none'}function applyMicState(){const off=muteMicBtn.classList.contains('off');if(localStream)localStream.getAudioTracks().forEach(t=>t.enabled=!off)}function applyVideoState(){const off=videoBtn.classList.contains('off');selfCam.classList.toggle('off',off);if(localStream)localStream.getVideoTracks().forEach(t=>t.enabled=!off)}function attachStream(){selfVideo.srcObject=localStream;selfCam.classList.remove('no-video');updateMirror();selfVideo.play().catch(()=>{});applyMicState();applyVideoState()}
     async function startCamera(){if(localStream)return true;if(!navigator.mediaDevices?.getUserMedia){selfCam.classList.add('no-video');return false}const tries=[{video:{facingMode},audio:true},{video:true,audio:true},{video:{facingMode},audio:false},{video:true,audio:false}];for(const c of tries){try{localStream=await navigator.mediaDevices.getUserMedia(c);attachStream();return true}catch(e){}}selfCam.classList.add('no-video');return false}
     async function flipCamera(){if(flipping||!localStream||!navigator.mediaDevices?.getUserMedia)return;flipping=true;flipBtn.classList.add('spin');const prev=facingMode;facingMode=facingMode==='user'?'environment':'user';const old=localStream.getVideoTracks()[0];if(old)old.stop();try{const ns=await navigator.mediaDevices.getUserMedia({video:{facingMode:{exact:facingMode}},audio:false}),nt=ns.getVideoTracks()[0];localStream.getVideoTracks().forEach(t=>localStream.removeTrack(t));localStream.addTrack(nt);selfVideo.srcObject=localStream;updateMirror();await selfVideo.play().catch(()=>{});applyVideoState()}catch(e){facingMode=prev}finally{flipping=false;flipBtn.classList.remove('spin');saveCallSession()}}
-    function stopCamera(){if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null}selfVideo.srcObject=null;selfCam.classList.remove('no-video','off')}
+    function stopCamera(){if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null}selfVideo.srcObject=null;selfCam.classList.remove('no-video');selfCam.classList.toggle('off',videoBtn.classList.contains('off'))}
 
     function showMediaStatus(t){mediaStatusText.textContent=t;mediaStatus.classList.add('show')}function hideMediaStatus(){mediaStatus.classList.remove('show')}
     function currentSources(){return SEGMENTS[segment]||[]}
     function setRemoteSource(idx=0){sourceIndex=idx;const src=currentSources()[idx];if(!src)return false;clearStutter();remoteVideo.pause();remoteVideo.removeAttribute('src');remoteVideo.src=src;remoteVideo.preload='auto';remoteLoaded=true;remoteVideo.load();return true}
-    function ensureRemoteLoaded(){if(remoteLoaded)return;showMediaStatus('Estabelecendo conexão…');setRemoteSource(0)}
+    function ensureRemoteLoaded(){if(remoteLoaded)return;if(state==='in-call')showMediaStatus('Estabelecendo conexão…');setRemoteSource(0)}
     function playRemoteNow(){ensureRemoteLoaded();try{remoteVideo.muted=false;const p=remoteVideo.play();if(p?.catch)p.catch(()=>{remoteVideo.muted=true;remoteVideo.play().catch(()=>{})})}catch(e){}}
     function clearStutter(){clearInterval(stutterTimer);clearTimeout(stutterRelease);stutterTimer=null;stutterRelease=null;stutterStarted=false;phone.classList.remove('signal-drop');markQualityStable()}
     function startStutter(){if(stutterStarted||segment!==0||phase!=='video')return;stutterStarted=true;phone.classList.add('signal-drop');markQualityLow(6500);stutterTimer=setInterval(()=>{if(state!=='in-call'||segment!==0||phase!=='video'){clearStutter();return}try{if(!remoteVideo.paused){remoteVideo.pause();stutterRelease=setTimeout(()=>remoteVideo.play().catch(()=>{}),170+Math.random()*180)}}catch(e){}},720)}
@@ -245,7 +290,7 @@
         try{remoteVideo.load()}catch(e){}
         remoteVideo.addEventListener('loadedmetadata',()=>{
           try{remoteVideo.currentTime=t}catch(e){}
-          playRemoteNow();
+          if(state==='in-call')playRemoteNow();
         },{once:true});
       },2500)
     }
@@ -282,8 +327,8 @@
     }
     function beginIntermission(){if(segment!==0||phase==='intermission')return;clearTimeout(transitionRecoveryTimer);transitionRecoveryTimer=null;clearStutter();phase='intermission';remoteVideo.pause();pauseScreen.classList.add('show');hideMediaStatus();phone.classList.remove('has-remote');chatAutoMessageShown=true;openChat(true);chatCountdown.classList.add('show');chatStatus.textContent='ausente por alguns segundos';addMessage('calma amor, volto em 20 segundos','them');intermissionEndsAt=Date.now()+INTERMISSION_MS;saveCallSession();preloadSecondSegment();clearInterval(countdownTimer);updateCountdown();countdownTimer=setInterval(updateCountdown,500)}
     function resumeWithSecondVideo(){if(phase!=='intermission')return;clearInterval(countdownTimer);countdownTimer=null;chatCountdown.classList.remove('show');chatStatus.textContent='na chamada';pauseScreen.classList.remove('show');phase='video';segment=1;sourceIndex=0;remoteLoaded=false;closeChat(true);showMediaStatus('Retomando chamada…');setRemoteSource(0);remoteVideo.addEventListener('canplay',()=>{phone.classList.add('has-remote');hideMediaStatus();playRemoteNow();saveCallSession()},{once:true});playRemoteNow()}
-    function finishRemoteCall(){if(state!=='in-call')return;clearCallSession();stopCallTimer();stopCamera();clearStutter();hideMediaStatus();pauseScreen.classList.remove('show');closeChat(true);phone.classList.remove('has-remote');phone.classList.add('one-time-ended');setState('ended');callType.textContent='Chamada encerrada';subStatus.textContent='Bianca encerrou a chamada.'}
-    function cleanupActiveCall(){stopRinging();stopVibration();stopCallTimer();stopCamera();clearStutter();clearRemoteRecovery();clearTimeout(transitionRecoveryTimer);transitionRecoveryTimer=null;clearControlsAutoHide();clearInterval(countdownTimer);clearTimeout(retryTimer);try{remoteVideo.pause();remoteVideo.removeAttribute('src');remoteVideo.load()}catch(e){}remoteLoaded=false;remoteRetryCount=0;pauseScreen.classList.remove('show');phone.classList.remove('answering','declining','recovering','has-remote','signal-drop');clearCallSession()}
+    function finishRemoteCall(){if(state!=='in-call')return;clearCallSession();stopCallTimer();stopCamera();clearStutter();hideMediaStatus();pauseScreen.classList.remove('show');camPrompt.classList.remove('show');closeChat(true);phone.classList.remove('has-remote');phone.classList.add('one-time-ended');setState('ended');callType.textContent='Chamada encerrada';subStatus.textContent='Bianca encerrou a chamada.'}
+    function cleanupActiveCall(){clearTimeout(onlineStatusTimer);onlineStatusTimer=null;clearTimeout(callingTimer);callingTimer=null;stopRinging();stopVibration();stopCallTimer();stopCamera();clearStutter();clearRemoteRecovery();clearTimeout(transitionRecoveryTimer);transitionRecoveryTimer=null;clearControlsAutoHide();clearInterval(countdownTimer);clearTimeout(retryTimer);try{remoteVideo.pause();remoteVideo.removeAttribute('src');remoteVideo.load()}catch(e){}remoteLoaded=false;remoteRetryCount=0;pauseScreen.classList.remove('show');camPrompt.classList.remove('show');phone.classList.remove('answering','declining','recovering','has-remote','signal-drop');clearCallSession()}
 
     remoteVideo.addEventListener('loadeddata',()=>{if(phase==='video'){phone.classList.add('has-remote');remoteRetryCount=0;clearRemoteRecovery();hideMediaStatus();markQualityStable()}});
     remoteVideo.addEventListener('canplay',()=>{if(phase==='video'){remoteRetryCount=0;clearRemoteRecovery();hideMediaStatus();markQualityStable()}});
@@ -292,18 +337,66 @@
     remoteVideo.addEventListener('waiting',()=>{if(state==='in-call'&&phase==='video'&&!stutterStarted){markQualityLow();showMediaStatus('Sinal instável. Aguardando vídeo…');scheduleRemoteRecovery()}});
     remoteVideo.addEventListener('stalled',()=>{if(state==='in-call'&&phase==='video'&&!stutterStarted){markQualityLow(6000);showMediaStatus('Sinal instável. Aguardando vídeo…');scheduleRemoteRecovery()}});
     remoteVideo.addEventListener('ended',()=>{if(segment+1<SEGMENTS.length)beginTransitionRecovery();else finishRemoteCall()});
-    remoteVideo.addEventListener('error',()=>{clearRemoteRecovery();markQualityLow(7000);if(sourceIndex+1<currentSources().length){showMediaStatus('Restabelecendo conexão…');setRemoteSource(sourceIndex+1);playRemoteNow()}else{showMediaStatus('Não foi possível carregar o vídeo. Verifique sua conexão e tente novamente.')}});
+    remoteVideo.addEventListener('error',()=>{clearRemoteRecovery();markQualityLow(7000);if(sourceIndex+1<currentSources().length){if(state==='in-call')showMediaStatus('Restabelecendo conexão…');setRemoteSource(sourceIndex+1);if(state==='in-call')playRemoteNow()}else if(state==='in-call'){showMediaStatus('Não foi possível carregar o vídeo. Verifique sua conexão e tente novamente.')}});
     window.addEventListener('online',()=>{markQualityStable();if(state==='in-call'&&phase==='video'){showMediaStatus('Conexão restaurada. Retomando chamada…');retryRemote()}});
 
-    async function recoverCall(saved){recovering=true;stopRinging();stopVibration();clearForcedMotion();phone.classList.remove('one-time-ended');phone.classList.add('recovering');setState('connecting');callType.textContent='Recuperando chamada';subStatus.textContent='Aguarde um instante. Estamos restaurando sua chamada.';connectingCard.textContent='Recuperando chamada…';seconds=Math.max(0,Number(saved.seconds)||0);renderTimer();segment=(saved.segment===1&&SEGMENTS.length>1)?1:0;phase=(saved.phase==='intermission'&&SEGMENTS.length>1)?'intermission':'video';intermissionEndsAt=Number(saved.intermissionEndsAt)||0;facingMode=saved.facingMode==='environment'?'environment':'user';muteMicBtn.classList.toggle('off',!!saved.micOff);videoBtn.classList.toggle('off',!!saved.videoOff);updateMirror();const cam=startCamera();await new Promise(r=>setTimeout(r,3000));await cam.catch(()=>false);setState('in-call');phone.classList.remove('recovering');recovering=false;callType.textContent='Chamada de vídeo';subStatus.textContent='';connectingCard.textContent='Conectando sua câmera com segurança…';startCallTimer(seconds);applyMicState();applyVideoState();if(phase==='intermission'){pauseScreen.classList.add('show');openChat(true);if(!chatAutoMessageShown){addMessage('calma amor, volto em 20 segundos','them');chatAutoMessageShown=true}if(intermissionEndsAt<=Date.now()){resumeWithSecondVideo()}else{clearInterval(countdownTimer);updateCountdown();countdownTimer=setInterval(updateCountdown,500)}}else{remoteLoaded=false;sourceIndex=0;showMediaStatus('Retomando chamada…');setRemoteSource(0);restoreRemotePosition(saved.remoteTime)}saveCallSession()}
+    async function recoverCall(saved){recovering=true;stopRinging();stopVibration();clearForcedMotion();phone.classList.remove('one-time-ended');phone.classList.add('recovering');setState('connecting');callType.textContent='Recuperando chamada';subStatus.textContent='Aguarde um instante. Estamos restaurando sua chamada.';setConnectingLabel(false);seconds=Math.max(0,Number(saved.seconds)||0);renderTimer();segment=(saved.segment===1&&SEGMENTS.length>1)?1:0;phase=(saved.phase==='intermission'&&SEGMENTS.length>1)?'intermission':'video';intermissionEndsAt=Number(saved.intermissionEndsAt)||0;facingMode=saved.facingMode==='environment'?'environment':'user';muteMicBtn.classList.toggle('off',!!saved.micOff);const isVideoOff=saved.videoOff!==undefined?!!saved.videoOff:true;videoBtn.classList.toggle('off',isVideoOff);selfCam.classList.toggle('off',isVideoOff);updateMirror();const cam=isVideoOff?Promise.resolve(false):startCamera();await new Promise(r=>setTimeout(r,3000));await cam.catch(()=>false);setState('in-call');phone.classList.remove('recovering');recovering=false;callType.textContent='Chamada de vídeo';subStatus.textContent='';setConnectingLabel(true);startCallTimer(seconds);applyMicState();applyVideoState();if(phase==='intermission'){pauseScreen.classList.add('show');openChat(true);if(!chatAutoMessageShown){addMessage('calma amor, volto em 20 segundos','them');chatAutoMessageShown=true}if(intermissionEndsAt<=Date.now()){resumeWithSecondVideo()}else{clearInterval(countdownTimer);updateCountdown();countdownTimer=setInterval(updateCountdown,500)}}else{remoteLoaded=false;sourceIndex=0;showMediaStatus('Retomando chamada…');setRemoteSource(0);restoreRemotePosition(saved.remoteTime)}saveCallSession()}
 
-    acceptBtn.addEventListener('click',()=>{if(state!=='incoming'||hasUsedCall())return;markCallUsed();seedActiveCallSession();clearForcedMotion();stopRinging();stopVibration();ensureAudio();ringPattern();startCamera();segment=0;phase='video';remoteLoaded=false;ensureRemoteLoaded();phone.classList.add('answering');setTimeout(()=>{phone.classList.remove('answering');setState('connecting');callType.textContent='Chamando…';subStatus.textContent='Iniciando chamada de vídeo…';showMediaStatus('Chamando Bianca…');playRemoteNow();setTimeout(()=>{setState('in-call');callType.textContent='Chamada de vídeo';startCallTimer(0);saveCallSession()},1200)},280)});
+    acceptBtn.addEventListener('click',()=>{
+      if(state!=='incoming'||hasUsedCall())return;
+      markCallUsed();
+      seedActiveCallSession();
+      clearForcedMotion();
+      clearTimeout(onlineStatusTimer);
+      onlineStatusTimer=null;
+      phone.classList.add('online-ready');
+      callType.textContent='online agora';
+      stopRinging();
+      stopVibration();
+      ensureAudio();
+      startRinging();
+      videoBtn.classList.add('off');
+      selfCam.classList.add('off');
+      camPrompt.classList.remove('show');
+      segment=0;
+      phase='video';
+      remoteLoaded=false;
+      setRemoteSource(0);
+      try{
+        remoteVideo.muted=true;
+        const p=remoteVideo.play();
+        if(p&&p.then){
+          p.then(()=>{
+            if(state!=='in-call'){
+              remoteVideo.pause();
+              try{remoteVideo.currentTime=0}catch(e){}
+            }
+          }).catch(()=>{});
+        }
+      }catch(e){}
+      setConnectingLabel(true);
+      setState('connecting');
+      clearTimeout(callingTimer);
+      callingTimer=setTimeout(()=>{
+        callingTimer=null;
+        stopRinging();
+        setState('in-call');
+        callType.textContent='Chamada de vídeo';
+        if(remoteVideo.readyState<2)showMediaStatus('Conectando vídeo…');
+        playRemoteNow();
+        startCallTimer(0);
+        camPrompt.classList.add('show');
+        saveCallSession();
+      },3000);
+    });
     declineBtn.addEventListener('click',()=>{if(state!=='incoming')return;clearCallSession();stopRinging();stopVibration();clearForcedMotion();phone.classList.add('declining');setTimeout(()=>{phone.classList.remove('declining');setState('ended');callType.textContent='Chamada finalizada';subStatus.textContent='Você cancelou esta chamada.'},300)});
     endBtn.addEventListener('click',()=>{clearCallSession();const dur=timerValue.textContent;cleanupActiveCall();phone.classList.add('one-time-ended');setState('ended');callType.textContent='Chamada encerrada';subStatus.textContent='Duração da chamada: '+dur});
     restartBtn.addEventListener('click',()=>{if(hasUsedCall())showUsedCallEnded();else resetCall()});
     soundToggle.addEventListener('click',()=>{muted=!muted;if(muted)stopRinging()});
     muteMicBtn.addEventListener('click',()=>{muteMicBtn.classList.toggle('off');applyMicState();saveCallSession()});
-    videoBtn.addEventListener('click',()=>{videoBtn.classList.toggle('off');applyVideoState();saveCallSession()});
+    videoBtn.addEventListener('click',async()=>{camPrompt.classList.remove('show');videoBtn.classList.toggle('off');if(!videoBtn.classList.contains('off')&&!localStream){await startCamera()}applyVideoState();saveCallSession()});
+    camYesBtn.addEventListener('click',async()=>{camPrompt.classList.remove('show');videoBtn.classList.remove('off');selfCam.classList.remove('off');await startCamera();applyVideoState();saveCallSession()});
+    camNoBtn.addEventListener('click',()=>{camPrompt.classList.remove('show');videoBtn.classList.add('off');selfCam.classList.add('off');stopCamera();applyVideoState();saveCallSession()});
     chatBtn.addEventListener('click',()=>chatPanel.classList.contains('open')?closeChat():openChat());chatClose.addEventListener('click',()=>closeChat());
     chatForm.addEventListener('submit',e=>{e.preventDefault();const text=chatInput.value.trim();if(!text)return;addMessage(text,'me');chatInput.value=''});
     flipBtn.addEventListener('click',flipCamera);
@@ -312,7 +405,7 @@
        Depois de usar um controle, a interface se recolhe imediatamente. */
     phone.addEventListener('pointerdown',function(e){
       if(state!=='in-call')return;
-      if(e.target.closest('.controls,.flip-cam,.chat-panel,.self-cam'))return;
+      if(e.target.closest('.controls,.flip-cam,.chat-panel,.self-cam,.cam-prompt'))return;
       if(phone.classList.contains('controls-hidden'))showCallControls();
       else{clearTimeout(controlsHideTimer);controlsHideTimer=null;hideCallControls()}
     },{passive:true});
@@ -346,9 +439,9 @@
       if(zoomShortcut||devShortcut){e.preventDefault();e.stopPropagation()}
     },true);
 
-    function resetCall(){if(hasUsedCall()){showUsedCallEnded();return}cleanupActiveCall();qualityStartupUntil=0;recovering=false;segment=0;phase='video';sourceIndex=0;intermissionEndsAt=0;chatAutoMessageShown=false;chatMessages.innerHTML='';chatCountdown.classList.remove('show');phone.classList.remove('one-time-ended');setState('incoming');callType.textContent='online agora';subStatus.textContent='Disponível para chamada de vídeo privada.';seconds=0;timerValue.textContent='00:00';facingMode='user';updateMirror();muteMicBtn.classList.remove('off');videoBtn.classList.remove('off');requestAnimationFrame(forceIncomingMotion)}
+    function resetCall(){if(hasUsedCall()){showUsedCallEnded();return}cleanupActiveCall();qualityStartupUntil=0;recovering=false;segment=0;phase='video';sourceIndex=0;intermissionEndsAt=0;chatAutoMessageShown=false;chatMessages.innerHTML='';chatCountdown.classList.remove('show');phone.classList.remove('one-time-ended');setState('incoming');scheduleOnlineStatus();subStatus.textContent='Disponível para chamada de vídeo privada.';seconds=0;timerValue.textContent='00:00';facingMode='user';updateMirror();muteMicBtn.classList.remove('off');videoBtn.classList.add('off');selfCam.classList.add('off');requestAnimationFrame(forceIncomingMotion)}
     window.addEventListener('beforeunload',saveCallSession);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveCallSession()});
-    async function init(){updateMirror();const saved=getStoredCall();if(saved){await recoverCall(saved);return}if(hasUsedCall()){showUsedCallEnded();return}requestAnimationFrame(forceIncomingMotion)}init();
+    async function init(){updateMirror();const saved=getStoredCall();if(saved){await recoverCall(saved);return}if(hasUsedCall()){showUsedCallEnded();return}scheduleOnlineStatus();requestAnimationFrame(forceIncomingMotion)}init();
   </script>
 </body>
 </html>
